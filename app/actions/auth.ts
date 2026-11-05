@@ -20,11 +20,22 @@ async function limited(scope: string): Promise<boolean> {
 
 const email = z.string().trim().toLowerCase().email();
 const password = z.string().min(8).max(72);
+/** Yönetici, giriş alanına e-posta yerine bu adı yazar. */
+const ADMIN_LOGIN = "admin";
+const ADMIN_EMAIL = "admin@formstep.tr";
+
+function signInEmail(raw: unknown): string | null {
+  const value = String(raw ?? "").trim().toLowerCase();
+  if (value === ADMIN_LOGIN) return ADMIN_EMAIL;
+  const parsed = email.safeParse(value);
+  return parsed.success ? parsed.data : null;
+}
 
 export async function signIn(_: AuthState, form: FormData): Promise<AuthState> {
   if (!supabaseConfigured()) return NOT_READY;
   if (await limited("signin")) return { ok: false, message: "Çok fazla deneme. Birkaç dakika sonra tekrar dene." };
-  const parsed = z.object({ email, password: z.string().min(1) }).safeParse({ email: form.get("email"), password: form.get("password") });
+  const emailValue = signInEmail(form.get("email"));
+  const parsed = z.object({ email, password: z.string().min(1) }).safeParse({ email: emailValue, password: form.get("password") });
   if (!parsed.success) return { ok: false, message: "E-posta ve şifreni kontrol et." };
   const supabase = await supabaseServer();
   const { error } = await supabase.auth.signInWithPassword(parsed.data);

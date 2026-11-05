@@ -58,7 +58,7 @@ export function LoginRegister({ next, initialTab, linkError }: { next: string; i
           <input type="hidden" name="next" value={next} />
           <div>
             <label htmlFor="email" className="label">E-posta</label>
-            <input id="email" name="email" type="email" autoComplete="email" required className="field" />
+            <input id="email" name="email" type="text" inputMode="email" autoComplete="username" required className="field" />
           </div>
           <div>
             <div className="flex items-center justify-between">

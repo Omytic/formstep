@@ -10,7 +10,8 @@
 | Sipariş takip sayfası, e-posta kuyruğu (Resend) | Tamam — Resend anahtarı bekleniyor |
 | Üyelik (kayıt, giriş, şifre sıfırlama), Hesabım (siparişler, adresler, ayarlar) | Tamam |
 | Yönetim — gizli adres /secretgate (özet, stok tablosu, siparişler, CSV, ürün/stok/görsel, kupon, içerik, yasal metin, ayarlar, kontrol listesi) | Tamam |
-| Supabase şeması, RLS, işlemsel fonksiyonlar | Tamam, gömülü Postgres testleri geçiyor — canlı projeye uygulanmadı |
+| Supabase şeması, RLS, işlemsel fonksiyonlar | Tamam — formstep projesi (Frankfurt) kuruldu, 7 migration uygulandı |
+| Yönetici hesabı | Tamam — sahip yetkisi, giriş adı admin |
 | Satıcı iletişim (ünvan, adres, telefon, e-posta) ve @formsteptr Instagram / X | Tamam — vergi dairesi ve MERSİS sitede gösterilmiyor |
 | Hakkımızda metni | Tamam |
 | Kargo ücreti 69,90 TL, 1.000 TL ve üzeri ücretsiz | Tamam — kargo firması ve teslimat süresi henüz yok |
