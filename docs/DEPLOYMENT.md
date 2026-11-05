@@ -40,7 +40,7 @@ müşteri üyeliği kapalı; kodları duruyor ve `lib/features.ts` içindeki iki
 | CNAME | `www` | `cname.vercel-dns.com` |
 
    Eski A / AAAA / CNAME kayıtları varsa (park sayfası vb.) sil. Vercel bazen projeye özel bir değer gösterir; ekranda ne yazıyorsa onu kullan.
-3. Yayılması birkaç dakika ile birkaç saat sürer. Vercel SSL sertifikasını kendisi kurar. `www` adresi otomatik olarak `formstep.tr`'ye yönlenir (next.config.ts).
+3. Yayılması birkaç dakika ile birkaç saat sürer. Vercel SSL sertifikasını kendisi kurar. Birincil alan adı Vercel'de hangisiyse diğeri ona gider. Uygulama içinde ayrıca `www` yönlendirmesi yok; iki taraf da birbirine yönlendirirse tarayıcı döngüye girer.
 
 ## 4. Adresler
 - Site: `https://formstep.tr`

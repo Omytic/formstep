@@ -16,5 +16,6 @@
 | E-posta adresi | info@omytic.com — giden posta ve sipariş bildirimleri |
 | Hakkımızda metni | Tamam |
 | Kargo ücreti 69,90 TL, 1.000 TL ve üzeri ücretsiz | Tamam — kargo firması ve teslimat süresi henüz yok |
+| Alan adı | Tamam — `www` ile köksüz adres birbirine yönlenmiyor; Vercel `formstep.tr`'yi `www`'ye gönderiyor |
 
-Testler: `npm test` → 29/29. `npm run lint`, `npm run typecheck`, `npm run build` temiz.
+Testler: `npm test` → 30/30. `npm run lint`, `npm run typecheck`, `npm run build` temiz.
