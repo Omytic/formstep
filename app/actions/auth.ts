@@ -19,6 +19,15 @@ async function limited(scope: string): Promise<boolean> {
 }
 
 const email = z.string().trim().toLowerCase().email();
+const personName = z
+  .string()
+  .trim()
+  .min(3)
+  .max(80)
+  .refine((value) => {
+    const parts = value.split(/\s+/).filter(Boolean);
+    return parts.length >= 2 && parts.every((part) => part.length >= 2);
+  });
 const password = z.string().min(8).max(72);
 /** Yönetici, giriş alanına e-posta yerine bu adı yazar. */
 const ADMIN_LOGIN = "admin";
@@ -47,7 +56,7 @@ export async function signUp(_: AuthState, form: FormData): Promise<AuthState> {
   if (!supabaseConfigured()) return NOT_READY;
   if (await limited("signup")) return { ok: false, message: "Çok fazla deneme. Birkaç dakika sonra tekrar dene." };
   const parsed = z
-    .object({ fullName: z.string().trim().min(3).max(80), email, password, kvkk: z.literal("on") })
+    .object({ fullName: personName, email, password, kvkk: z.literal("on") })
     .safeParse({ fullName: form.get("fullName"), email: form.get("email"), password: form.get("password"), kvkk: form.get("kvkk") });
   if (!parsed.success) {
     const path = parsed.error.issues[0]?.path[0];

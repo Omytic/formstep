@@ -8,7 +8,7 @@
 | Ödeme (misafir/üye, adres, bireysel/kurumsal fatura, sözleşme onayı, PayTR iFrame) | Tamam — PayTR mağazası bekleniyor |
 | PayTR bildirimi (imza, tekrar koruması, tutar kontrolü, stok yarışı) | Tamam, testli |
 | Sipariş takip sayfası, e-posta kuyruğu (Resend) | Tamam — Resend anahtarı bekleniyor |
-| Üyelik (kayıt, giriş, şifre sıfırlama), Hesabım (siparişler, adresler, ayarlar) | Tamam |
+| Üyelik (kayıt, giriş, şifre sıfırlama), Hesabım (siparişler, adresler, ayarlar) | Tamam — kayıtta ad soyad ve e-posta zorunlu, üyesiz alışveriş bağlantısı var |
 | Yönetim — gizli adres /secretgate (özet, stok tablosu, siparişler, CSV, ürün/stok/görsel, kupon, içerik, yasal metin, ayarlar, kontrol listesi) | Tamam |
 | Supabase şeması, RLS, işlemsel fonksiyonlar | Tamam — formstep projesi (Frankfurt) kuruldu, 7 migration uygulandı |
 | Yönetici hesabı | Tamam — sahip yetkisi, giriş adı admin |

@@ -36,6 +36,7 @@ function PasswordInput({ id, name, autoComplete }: { id: string; name: string; a
 
 export function LoginRegister({ next, initialTab, linkError }: { next: string; initialTab: "giris" | "kayit"; linkError: boolean }) {
   const [tab, setTab] = useState(initialTab);
+  const guestHref = next.startsWith("/odeme") || next.startsWith("/sepet") ? next : "/";
   const [inState, inAction, inPending] = useActionState(signIn, linkError ? { ok: false, message: "Bağlantının süresi dolmuş. Tekrar dene." } : null);
   const [upState, upAction, upPending] = useActionState(signUp, null);
 
@@ -74,7 +75,7 @@ export function LoginRegister({ next, initialTab, linkError }: { next: string; i
         <form action={upAction} className="fs-pop mt-8 space-y-5">
           <div>
             <label htmlFor="fullName" className="label">Ad soyad</label>
-            <input id="fullName" name="fullName" autoComplete="name" required className="field" />
+            <input id="fullName" name="fullName" autoComplete="name" required minLength={5} pattern=".*\S{2,}\s+\S{2,}.*" title="Adını ve soyadını gir." className="field" />
           </div>
           <div>
             <label htmlFor="email2" className="label">E-posta</label>
@@ -92,7 +93,9 @@ export function LoginRegister({ next, initialTab, linkError }: { next: string; i
           {!upState?.ok ? <Submit pending={upPending}>Hesap oluştur</Submit> : null}
         </form>
       )}
-      <p className="mt-8 text-center text-sm text-ink/55">Üye olmadan da alışveriş yapabilirsin.</p>
+      <p className="mt-8 text-center text-sm">
+        <Link href={guestHref} className="font-medium text-blue underline decoration-blue/30 underline-offset-4 hover:decoration-blue">Üye olmadan da alışveriş yapabilirsin.</Link>
+      </p>
     </div>
   );
 }
