@@ -46,9 +46,16 @@ export function ProductView({
   useEffect(() => {
     const box = buyBox.current;
     if (!box) return;
-    const io = new IntersectionObserver(([e]) => setShowBar(!e.isIntersecting && e.boundingClientRect.top < 0), { threshold: 0 });
+    // Satın alma kutusu ekrandan çıkınca alttaki şerit görünür; alt bilgiye gelince tekrar gizlenir.
+    let pastBox = false;
+    let atFooter = false;
+    const update = () => setShowBar(pastBox && !atFooter);
+    const io = new IntersectionObserver(([e]) => { pastBox = !e.isIntersecting && e.boundingClientRect.top < 0; update(); }, { threshold: 0 });
     io.observe(box);
-    return () => io.disconnect();
+    const footer = document.querySelector("footer");
+    const fo = new IntersectionObserver(([e]) => { atFooter = e.isIntersecting; update(); }, { threshold: 0 });
+    if (footer) fo.observe(footer);
+    return () => { io.disconnect(); fo.disconnect(); };
   }, []);
 
   function tilt(e: PointerEvent<HTMLDivElement>) {

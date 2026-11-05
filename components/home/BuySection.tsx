@@ -24,16 +24,16 @@ function BuyCard({ product, marketplaces }: { product: Product; marketplaces: Ma
   return (
     <article
       onPointerMove={spotlight}
-      className="spotlight group relative flex h-full flex-col overflow-hidden rounded-[2rem] p-7"
+      className="spotlight group @container relative flex h-full flex-col overflow-hidden rounded-[2rem] p-6 lg:p-7"
       style={{ backgroundColor: m.bg, color: m.fg }}
     >
-      <div className="flex items-start justify-between gap-4">
+      <div className="flex flex-col gap-3 @[19rem]:flex-row @[19rem]:items-start @[19rem]:justify-between @[19rem]:gap-4">
         <div>
           <p className="kicker" style={{ color: m.accent }}>{m.tag}</p>
           <Link href={`/urun/${product.slug}`} className="display mt-2 block text-5xl hover:opacity-80">{product.name}</Link>
         </div>
         {price !== null ? (
-          <p className="shrink-0 text-right">
+          <p className="shrink-0 @[19rem]:text-right">
             <span className="block text-2xl font-bold tabular-nums">{formatPrice(price)}</span>
             <span className="text-xs" style={{ color: m.muted }}>KDV dahil</span>
           </p>

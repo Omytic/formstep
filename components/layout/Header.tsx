@@ -69,7 +69,7 @@ export function Header({ announcement, instagram, x }: { announcement?: string; 
             <Image src="/assets/brand/logo-white.png" alt="FormStep" width={140} height={31} priority className="h-[26px] w-auto" />
           </Link>
 
-          <nav className="hidden items-center gap-1 text-sm md:flex" aria-label="Ana menü">
+          <nav className="hidden items-center gap-1 text-sm lg:flex" aria-label="Ana menü">
             {links.map((l) => {
               const active = pathname === l.href;
               return (
@@ -98,11 +98,11 @@ export function Header({ announcement, instagram, x }: { announcement?: string; 
                 ) : null}
               </button>
             ) : (
-              <Link href="/#satin-al" className="ml-1 hidden items-center gap-1.5 rounded-full bg-blue px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#1c68d4] sm:inline-flex">
+              <Link href="/#satin-al" className="ml-1 hidden items-center gap-1.5 whitespace-nowrap rounded-full bg-blue px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#1c68d4] sm:inline-flex">
                 Satın al <ArrowUpRight size={15} />
               </Link>
             )}
-            <button type="button" onClick={() => setMenu((v) => !v)} className="grid size-11 place-items-center rounded-full transition hover:bg-white/10 md:hidden" aria-expanded={menu} aria-controls="mobil-menu" aria-label={menu ? "Menüyü kapat" : "Menüyü aç"}>
+            <button type="button" onClick={() => setMenu((v) => !v)} className="grid size-11 place-items-center rounded-full transition hover:bg-white/10 lg:hidden" aria-expanded={menu} aria-controls="mobil-menu" aria-label={menu ? "Menüyü kapat" : "Menüyü aç"}>
               {menu ? <X size={21} /> : <Menu size={21} />}
             </button>
           </div>
@@ -111,7 +111,7 @@ export function Header({ announcement, instagram, x }: { announcement?: string; 
       </header>
 
       {menu ? (
-        <div id="mobil-menu" className="fs-backdrop fixed inset-0 z-40 bg-night pt-20 text-paper md:hidden" role="dialog" aria-modal="true" aria-label="Menü">
+        <div id="mobil-menu" className="fs-backdrop fixed inset-0 z-40 overflow-y-auto bg-night pt-20 text-paper lg:hidden" role="dialog" aria-modal="true" aria-label="Menü">
           <div aria-hidden className="pointer-events-none absolute inset-0 bg-[radial-gradient(60%_40%_at_80%_20%,rgba(36,119,234,0.3),transparent_70%)]" />
           <nav className="fs-enter relative flex flex-col px-6" aria-label="Mobil menü">
             {[

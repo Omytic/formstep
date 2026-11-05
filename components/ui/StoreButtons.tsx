@@ -35,7 +35,7 @@ export function StoreButtons({
   return (
     <ul className={`${layout === "row" ? "grid gap-2 sm:grid-cols-3" : "grid gap-2"} ${className}`}>
       {items.map((s, i) => (
-        <li key={s.key}>
+        <li key={s.key} className="@container">
           <a
             href={s.href}
             target="_blank"
@@ -45,7 +45,7 @@ export function StoreButtons({
           >
             <Image src={s.src} alt={s.label} width={s.w} height={s.h} className="w-auto object-contain object-left" style={{ height: s.height, width: "auto" }} />
             <span className="flex items-center gap-1 text-sm font-semibold text-white/80 transition group-hover:text-white">
-              Satın al <ArrowUpRight size={15} className="transition-transform group-hover:-translate-y-px group-hover:translate-x-px" />
+              <span className="hidden @[15rem]:inline">Satın al</span> <ArrowUpRight size={15} className="transition-transform group-hover:-translate-y-px group-hover:translate-x-px" />
             </span>
           </a>
         </li>

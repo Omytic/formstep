@@ -133,10 +133,10 @@ export function ModelShowcase({ prices }: { prices: Record<string, number | null
           className="sc-panel relative bg-[var(--panel-bg)] py-20 text-[var(--panel-fg)] lg:motion-safe:absolute lg:motion-safe:inset-0 lg:motion-safe:bg-transparent lg:motion-safe:py-0 lg:motion-safe:text-inherit"
           style={{ "--panel-bg": m.bg, "--panel-fg": m.fg } as CSSProperties}
         >
-          <div className="relative mx-auto grid h-full max-w-7xl items-center gap-10 px-5 lg:grid-cols-12">
+          <div className="relative mx-auto grid h-full max-w-7xl items-center gap-10 px-5 lg:grid-cols-12 lg:pt-16">
             <span
               aria-hidden
-              className="sc-code display pointer-events-none absolute left-0 right-0 top-1/2 -translate-y-1/2 select-none text-center text-[34vw] leading-none lg:text-[26vw]"
+              className="sc-code display pointer-events-none absolute left-0 right-0 top-1/2 -translate-y-1/2 select-none text-center text-[34vw] leading-none lg:text-[min(26vw,48vh)]"
               style={{
                 color: "transparent",
                 WebkitTextStroke: `1.5px ${m.accent}`,
@@ -150,7 +150,7 @@ export function ModelShowcase({ prices }: { prices: Record<string, number | null
               <p className="kicker" style={{ color: m.accent }}>
                 0{i + 1} — {m.tag}
               </p>
-              <h2 className="display mt-4 text-[clamp(4rem,9vw,8rem)]">{m.code}</h2>
+              <h2 className="display mt-4 text-[clamp(4rem,min(9vw,14vh),8rem)]">{m.code}</h2>
               <p className="mt-4 text-2xl font-semibold leading-tight tracking-tight">
                 {m.title}
               </p>

@@ -29,7 +29,7 @@ export default async function Page() {
         <ActionForm action={saveSetting} className="mt-4">
           <input type="hidden" name="key" value="public.announcement" />
           <div className="grid gap-4 md:grid-cols-[1fr_auto] md:items-end">
-            <F label="Metin" name="text" defaultValue={String(ann.text ?? "")} placeholder="750 TL üzeri kargo bedava" maxLength={140} />
+            <F label="Metin" name="text" defaultValue={String(ann.text ?? "")} placeholder="M900 şimdi Amazon'da indirimde" maxLength={140} />
             <div className="pb-3"><Toggle label="Yayında" name="active" defaultChecked={Boolean(ann.active)} /></div>
           </div>
         </ActionForm>

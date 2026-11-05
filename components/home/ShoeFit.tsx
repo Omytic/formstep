@@ -64,7 +64,7 @@ export function ShoeFit() {
       <div className="relative mx-auto grid h-full max-w-7xl items-center gap-10 px-5 py-24 lg:grid-cols-12 lg:py-0">
         <div className="lg:col-span-4">
           <p className="kicker text-sky">Ayakkabına yerleşir</p>
-          <h2 id="ayakkabi-baslik" className="display mt-4 text-5xl md:text-6xl">
+          <h2 id="ayakkabi-baslik" className="display mt-4 text-5xl md:text-6xl lg:text-5xl xl:text-6xl">
             Tek hamlede.
             <br />
             <span className="text-sky">Her adımda.</span>
