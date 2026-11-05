@@ -39,6 +39,7 @@ export async function Footer() {
                 <li><Link className="hover:text-sky" href="/urun/m300">M300 · İçe ve dışa basma</Link></li>
                 <li><Link className="hover:text-sky" href="/urun/m900">M900 · Topuk desteği</Link></li>
                 <li><Link className="hover:text-sky" href="/#secici">Hangisi bana uygun?</Link></li>
+                <li><Link className="hover:text-sky" href="/rehber">Tabanlık rehberi</Link></li>
               </ul>
             </div>
             <div>

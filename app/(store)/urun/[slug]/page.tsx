@@ -91,6 +91,9 @@ export default async function ProductPage({ params }: Props) {
             <p className="kicker" style={{ color: model.accent }} data-reveal>Kimler için?</p>
             <h2 id="kimler-baslik" className="display mt-4 text-5xl md:text-6xl" data-reveal>{model.tag}.</h2>
             <p className="mt-5 max-w-md leading-7" style={{ color: model.muted }} data-reveal>{model.body}</p>
+            <Link href={`/rehber#${{ m100: "gunluk", m300: "basis-tipi", m900: "topuk" }[model.slug]}`} className="mt-6 inline-flex items-center gap-1.5 text-sm font-semibold underline-offset-4 hover:underline" style={{ color: model.accent }} data-reveal>
+              {{ m100: "Gün boyu ayakta kalanlar için rehber", m300: "İçe ve dışa basma hakkında", m900: "Topuk ağrısı ve topuk dikeni hakkında" }[model.slug]} <ArrowRight size={15} />
+            </Link>
           </div>
           <ul className="grid gap-3 lg:col-span-6 lg:col-start-7" data-reveal-stagger>
             {model.forWho.map((w) => (

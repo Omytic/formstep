@@ -9,6 +9,7 @@ import { Pressure } from "@/components/home/Pressure";
 import { ShoeFit } from "@/components/home/ShoeFit";
 import { ScrollEffects } from "@/components/home/ScrollEffects";
 import { Story } from "@/components/home/Story";
+import { GuideTeaser } from "@/components/home/GuideTeaser";
 import { Trust } from "@/components/home/Trust";
 import { fromPrice, getCatalog, getFaqs, getSettings } from "@/lib/store/catalog";
 
@@ -25,6 +26,7 @@ export default async function HomePage() {
       <Marquee claim={settings.claims.find((c) => c.active)?.text} />
       <Pressure />
       <Finder mapping={settings.finder} />
+      <GuideTeaser />
       <HowTo />
       <BuySection products={catalog} marketplaces={settings.marketplaces} />
       <Trust settings={settings} />

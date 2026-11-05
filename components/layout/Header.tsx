@@ -13,6 +13,7 @@ const links = [
   { href: "/urun/m100", label: "M100" },
   { href: "/urun/m300", label: "M300" },
   { href: "/urun/m900", label: "M900" },
+  { href: "/rehber", label: "Rehber" },
   { href: "/#secici", label: "Hangisi bana uygun?" },
 ];
 
@@ -26,7 +27,7 @@ export function Header({ announcement, instagram, x }: { announcement?: string; 
   const prevCount = useRef(count);
   const pathname = usePathname();
   // Üstü koyu renkli sayfalarda menü şeffaf başlar; açık renkli sayfalarda baştan koyu cam zemin alır.
-  const darkTop = pathname === "/" || /^\/urun\/m(3|9)00/.test(pathname) || pathname.startsWith("/bilgilendirme");
+  const darkTop = pathname === "/" || /^\/urun\/m(3|9)00/.test(pathname) || pathname.startsWith("/bilgilendirme") || pathname.startsWith("/rehber");
 
   useEffect(() => {
     const onScroll = () => {
