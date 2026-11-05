@@ -2,6 +2,10 @@ import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 import { ADMIN } from "@/lib/admin-path";
 import { ACCOUNT_PATHS, ACCOUNTS_ENABLED, SALES_ENABLED, SALES_PATHS } from "@/lib/features";
+import { LEGAL_NAV } from "@/lib/legal";
+
+/** Var olmayan ürün ve bilgi sayfaları gerçek 404 döner (sayfa akışı başladıktan sonra 200 kalmasın). */
+const UNKNOWN_PAGE = new RegExp(`^/(urun/(?!(m100|m300|m900)/?$)[^/]+|bilgilendirme/(?!(${LEGAL_NAV.map((l) => l.slug).join("|")})/?$)[^/]+)`);
 
 /**
  * 1) Yönetim paneli yalnızca gizli adresten (ADMIN) açılır; doğrudan /admin 404 döner.
@@ -17,7 +21,8 @@ export async function proxy(request: NextRequest) {
     pathname.startsWith("/admin/") ||
     pathname.startsWith("/yonetim-giris") ||
     (!SALES_ENABLED && SALES_PATHS.test(pathname)) ||
-    (!ACCOUNTS_ENABLED && ACCOUNT_PATHS.test(pathname));
+    (!ACCOUNTS_ENABLED && ACCOUNT_PATHS.test(pathname)) ||
+    (UNKNOWN_PAGE.test(pathname) && pathname !== "/bilgilendirme/teslimat");
   if (hidden) {
     return NextResponse.rewrite(new URL("/sayfa-bulunamadi", request.url), { status: 404 });
   }

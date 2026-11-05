@@ -15,7 +15,7 @@ export function Story() {
           </p>
           <Link href="/bilgilendirme/hakkimizda" className="mt-8 inline-flex items-center gap-2 font-medium text-sky transition hover:text-white">
             <ArrowUpRight size={18} />
-            Hikâyemizi keşfedin
+            Hikâyemizi keşfet
           </Link>
         </div>
       </div>

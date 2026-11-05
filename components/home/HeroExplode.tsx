@@ -23,7 +23,8 @@ const maskStyle = (image: string): CSSProperties => ({
   maskRepeat: "no-repeat",
 });
 
-const INSOLE_MASK = maskStyle(`url(${TOP})`);
+/** Maske için küçük, yalnızca saydamlık içeren kopya (asıl görsel 1 MB). */
+const INSOLE_MASK = maskStyle("url(/assets/layers/m900-mask.png)");
 
 const noise = (r: number, g: number, b: number, a: number) =>
   `url("data:image/svg+xml;utf8,${encodeURIComponent(

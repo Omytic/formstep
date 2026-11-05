@@ -72,7 +72,7 @@ export function ShoeFit() {
           <ol className="mt-10 space-y-5">
             {[
               ["Eski tabanlığı çıkar", "Çıkarılabilir tabanlığı olan ayakkabılarda kullanılır."],
-              ["FormStep'i topuktan oturt", "Topuk yuvası ayakkabının arkasına tam yerleşir."],
+              ["FormStep'i topuktan oturt", "Topuk kısmı ayakkabının arkasına tam yerleşir."],
               ["Giy ve yürü", "Memory foam birkaç adımda ayağının şeklini alır."],
             ].map(([t, d], i) => (
               <li key={t} className="sf-step flex gap-4">

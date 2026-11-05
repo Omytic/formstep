@@ -4,17 +4,18 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl()),
-  title: { default: "FormStep — Memory foam tabanlık", template: "%s — FormStep" },
+  title: { default: "FormStep — Memory foam tabanlık | M100, M300, M900", template: "%s — FormStep" },
   description: "Amazon Türkiye'nin en çok satan tabanlığı FormStep: günlük kullanım için M100, içe ve dışa basmaya özel M300, topuk desteği için M900. İki katmanlı memory foam tabanlıklar.",
   applicationName: "FormStep",
   openGraph: {
     title: "FormStep — Her adımda daha fazla konfor",
-    description: "Ayağının şeklini alan memory foam tabanlıklar. M100, M300, M900.",
+    description: "Amazon Türkiye'nin en çok satan tabanlığı. İki katmanlı memory foam: M100, M300, M900.",
     locale: "tr_TR",
     type: "website",
     siteName: "FormStep",
-    images: [{ url: "/assets/products/m900-2.png", width: 2000, height: 2000, alt: "FormStep M900" }],
+    images: [{ url: "/og.jpg", width: 1200, height: 630, alt: "FormStep memory foam tabanlık" }],
   },
+  twitter: { card: "summary_large_image", site: "@formsteptr", images: ["/og.jpg"] },
 };
 
 export const viewport: Viewport = { themeColor: "#060a16" };

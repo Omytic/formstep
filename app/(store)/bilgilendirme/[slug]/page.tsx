@@ -21,7 +21,10 @@ async function override(slug: string): Promise<{ title: string; body: string; up
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const nav = LEGAL_NAV.find((l) => l.slug === slug);
-  return nav ? { title: nav.title, alternates: { canonical: `/bilgilendirme/${slug}` } } : {};
+  if (!nav) return {};
+  const settings = await getSettings();
+  const doc = legalDoc(slug, settings.seller, settings.shipping, undefined, settings.marketplaces);
+  return { title: nav.title, description: doc?.intro.slice(0, 160), alternates: { canonical: `/bilgilendirme/${slug}` } };
 }
 
 export default async function LegalPage({ params }: Props) {

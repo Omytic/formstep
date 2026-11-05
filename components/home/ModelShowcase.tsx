@@ -180,7 +180,7 @@ export function ModelShowcase({ prices }: { prices: Record<string, number | null
                       {"  "}KDV dahil
                     </>
                   ) : (
-                    "Sitede çok yakında"
+                    m.tag
                   )}
                 </span>
               </div>
