@@ -22,7 +22,7 @@ Hepsi **FormStep'e özel ve yeni**: Supabase projesi, Vercel projesi, PayTR mağ
 | SUPABASE_SERVICE_ROLE_KEY | Hepsi (gizli) | Asla tarayıcıya gitmez |
 | PAYTR_MERCHANT_ID / KEY / SALT | Hepsi (gizli) | FormStep'in kendi PayTR mağazası |
 | PAYTR_TEST_MODE | Hepsi | Önce `1`, test ödemesi başarılı olunca `0` |
-| RESEND_API_KEY, EMAIL_FROM | Production | Alan adı Resend'de doğrulanmalı |
+| RESEND_API_KEY, EMAIL_FROM | Production | `FormStep <info@omytic.com>`. Resend'de doğrulanacak alan adı omytic.com. Sipariş bildirimleri de bu adrese gelir. |
 | CRON_SECRET | Production | Uzun rastgele değer |
 | NEXT_PUBLIC_GA_ID | İsteğe bağlı | Yalnızca çerez onayından sonra yüklenir |
 | NEXT_PUBLIC_ADMIN_PATH | İsteğe bağlı | Yönetim panelinin gizli adresi; varsayılan `/secretgate` |

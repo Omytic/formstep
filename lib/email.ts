@@ -6,6 +6,9 @@ import { supabaseAdmin } from "@/lib/supabase/admin";
 
 type Mail = { subject: string; html: string };
 
+/** Sipariş postasının gittiği ve yanıtların döndüğü adres. */
+const STORE_MAIL = "info@omytic.com";
+
 const esc = (s: string) => s.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]!);
 
 function layout(title: string, body: string): string {
@@ -14,7 +17,7 @@ function layout(title: string, body: string): string {
 <table width="560" cellpadding="0" cellspacing="0" style="max-width:560px;background:#fff;border-radius:20px;overflow:hidden">
 <tr><td style="background:#0e1a36;padding:28px 32px;color:#fff;font-size:22px;font-weight:800;letter-spacing:-0.5px">FormStep</td></tr>
 <tr><td style="padding:32px"><h1 style="margin:0 0 16px;font-size:24px">${esc(title)}</h1>${body}</td></tr>
-<tr><td style="padding:20px 32px;background:#f6f8fc;color:#6b7280;font-size:12px">Bu e-posta formstep.tr siparişinle ilgili olarak gönderildi.</td></tr>
+<tr><td style="padding:20px 32px;background:#f6f8fc;color:#6b7280;font-size:12px">Bu e-posta ${STORE_MAIL} adresinden, formstep.tr siparişinle ilgili olarak gönderildi. Yanıtların aynı adrese ulaşır.</td></tr>
 </table></td></tr></table></body></html>`;
 }
 
@@ -60,7 +63,7 @@ async function send(to: string, mail: Mail): Promise<void> {
   const res = await fetch("https://api.resend.com/emails", {
     method: "POST",
     headers: { Authorization: `Bearer ${process.env.RESEND_API_KEY}`, "Content-Type": "application/json" },
-    body: JSON.stringify({ from: process.env.EMAIL_FROM, to, subject: mail.subject, html: mail.html }),
+    body: JSON.stringify({ from: process.env.EMAIL_FROM, to, reply_to: STORE_MAIL, subject: mail.subject, html: mail.html }),
     signal: AbortSignal.timeout(10000),
   });
   if (!res.ok) throw new Error(`Resend ${res.status}: ${(await res.text()).slice(0, 200)}`);
@@ -84,7 +87,7 @@ export async function flushOutbox(limit = 20): Promise<void> {
   let adminEmail = "";
   if (jobs.some((j) => j.recipient === "admin")) {
     const { data } = await db.from("store_settings").select("value").eq("key", "private.notify").maybeSingle();
-    adminEmail = String((data?.value as Record<string, unknown>)?.admin_email ?? "");
+    adminEmail = String((data?.value as Record<string, unknown>)?.admin_email ?? "").trim() || STORE_MAIL;
   }
 
   for (const job of jobs) {

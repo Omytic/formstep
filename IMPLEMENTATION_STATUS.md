@@ -13,6 +13,7 @@
 | Supabase şeması, RLS, işlemsel fonksiyonlar | Tamam — formstep projesi (Frankfurt) kuruldu, 7 migration uygulandı |
 | Yönetici hesabı | Tamam — sahip yetkisi, giriş adı admin |
 | Satıcı iletişim (ünvan, adres, telefon, e-posta) ve @formsteptr Instagram / X | Tamam — vergi dairesi ve MERSİS sitede gösterilmiyor |
+| E-posta adresi | info@omytic.com — giden posta ve sipariş bildirimleri |
 | Hakkımızda metni | Tamam |
 | Kargo ücreti 69,90 TL, 1.000 TL ve üzeri ücretsiz | Tamam — kargo firması ve teslimat süresi henüz yok |
 
