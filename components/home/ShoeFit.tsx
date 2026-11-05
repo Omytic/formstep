@@ -10,7 +10,7 @@ gsap.registerPlugin(ScrollTrigger);
 /** Pin, React düğümü silmeden önce geri alınmalı; useEffect temizliği o sıradan sonra çalışır. */
 const useIsoLayout = typeof window === "undefined" ? useEffect : useLayoutEffect;
 
-/** Tabanlığın yandan kesiti: üstte siyah dokulu yüzey, altta mavi taban. */
+/** İki katmanlı tabanlığın yandan kesiti: üst katman (memory foam) ve alt katman (destek tabanı). */
 const INSOLE_TOP =
   "M112 246 C112 236 118 231 129 231 C150 239 190 251 240 251 C300 251 338 236 382 235 C432 235 470 251 540 255 C640 261 740 261 806 265 C815 266 819 271 813 276";
 const INSOLE_BODY = `${INSOLE_TOP} L112 276 Z`;

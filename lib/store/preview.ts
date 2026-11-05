@@ -2,7 +2,7 @@ import type { Faq, Product, StoreSettings } from "./types";
 
 /**
  * YALNIZCA GELİŞTİRME ÖNİZLEMESİ. Supabase bağlı değilken sitenin akışlarını
- * gezebilmek için kullanılan veriler. Numaralar, fiyat ve kargo ücreti gerçek; stok örnektir;
+ * gezebilmek için kullanılan veriler. Numaralar ve fiyat gerçek; stok örnektir;
  * sitede "önizleme" şeridiyle işaretlenir ve canlı ortamda hiçbir zaman yüklenmez.
  */
 /** FormStep'in tüm modellerdeki numara aralıkları (gerçek). */
@@ -47,12 +47,12 @@ export const previewProducts: Product[] = [
     name: "M100",
     tagline: "Günlük konfor",
     description:
-      "M100, FormStep'in her gün kullanılan modeli. Gri dokulu yüzeyi ve memory foam gövdesiyle ayağının şeklini alır; işte, okulda, şehirde gün boyu yumuşak bir zemin sunar.",
+      "M100, FormStep'in gündelik kullanım modeli. Hafif memory foam yapısıyla ayağının şeklini alır; işte, okulda, şehirde gün boyu yumuşak bir zemin sunar.",
     status: "published",
     sizeGuide: "",
     images: [
-      { src: "/assets/products/m100-2.png", alt: "FormStep M100 gri tabanlık, üstten görünüm" },
-      { src: "/assets/products/m100.png", alt: "FormStep M100 gri tabanlık, yandan görünüm" },
+      { src: "/assets/products/m100-2.png", alt: "FormStep M100 tabanlık, üstten görünüm" },
+      { src: "/assets/products/m100.png", alt: "FormStep M100 tabanlık, yandan görünüm" },
     ],
     features: [],
     variants: variants("M100", UNIT_PRICE_KURUS),
@@ -64,12 +64,12 @@ export const previewProducts: Product[] = [
     code: "M300",
     slug: "m300",
     name: "M300",
-    tagline: "Destek ve denge",
+    tagline: "İçe ve dışa basmaya özel",
     description:
-      "M300, kavisli formu ve belirgin topuk yuvasıyla ayağını yerinde tutmak için tasarlandı. Memory foam yüzeyi ve mavi tabanıyla uzun saatler ayakta kalanların modeli.",
+      "M300, içe ya da dışa basanlar için tasarlandı. Kavisli ark desteği ve derin topuk yuvası ayağını ortada tutar, adımını daha dengeli hâle getirmeye yardımcı olur.",
     status: "published",
     sizeGuide: "",
-    images: [{ src: "/assets/products/m300.png", alt: "FormStep M300 siyah tabanlık, mavi taban ve topuk yuvası" }],
+    images: [{ src: "/assets/products/m300.png", alt: "FormStep M300 tabanlık, kavisli form ve topuk yuvası" }],
     features: [],
     variants: variants("M300", UNIT_PRICE_KURUS),
     seoTitle: null,
@@ -80,14 +80,14 @@ export const previewProducts: Product[] = [
     code: "M900",
     slug: "m900",
     name: "M900",
-    tagline: "Premium konfor",
+    tagline: "Topuk desteği",
     description:
-      "M900, FormStep'in en yumuşak modeli. Delikli, dokulu siyah yüzeyi ve kalın gök mavisi tabanıyla tempoyu artırdığın günler için.",
+      "M900, topuk dikeni olanlar ve topuğunda hassasiyet yaşayanlar için en iyi seçimimiz. Ekstra topuk dolgusu ve FormStep'in en kalın memory foam yapısıyla topuğa binen yükü yumuşatır.",
     status: "published",
     sizeGuide: "",
     images: [
-      { src: "/assets/products/m900-2.png", alt: "FormStep M900 delikli siyah yüzeyli tabanlık" },
-      { src: "/assets/products/m900.png", alt: "FormStep M900 esnetilmiş, mavi taban görünüyor" },
+      { src: "/assets/products/m900-2.png", alt: "FormStep M900 tabanlık, delikli üst yüzey" },
+      { src: "/assets/products/m900.png", alt: "FormStep M900 tabanlık, esnek yapı" },
     ],
     features: [],
     variants: variants("M900", UNIT_PRICE_KURUS),
@@ -121,7 +121,8 @@ export const previewFaqs: Faq[] = [
   { id: "1", question: "Memory foam ne demek?", answer: "Vücut ısısı ve basınçla yumuşayıp ayağının şeklini alan, ardından yavaşça eski hâline dönen bir köpük türü." },
   { id: "2", question: "Hangi ayakkabılarla kullanabilirim?", answer: "Çıkarılabilir tabanlığı olan ayakkabılarda, eski tabanlığı çıkarıp yerine FormStep'i yerleştirerek kullanabilirsin." },
   { id: "3", question: "Numaramı nasıl seçerim?", answer: "Ayakkabı numarana göre seçersin. Her modelin numara seçenekleri ürün sayfasında yer alır." },
-  { id: "4", question: "Kargo ve teslimat nasıl işliyor?", answer: "Kargo ücreti 69,90 TL. 1.000 TL ve üzeri siparişlerde kargo ücretsiz. Teslimat yalnızca Türkiye içindeki adreslere yapılır." },
-  { id: "5", question: "İade edebilir miyim?", answer: "Mesafeli satış mevzuatı kapsamındaki cayma hakkın saklıdır. Ayrıntılar İade ve cayma sayfasında." },
-  { id: "6", question: "Tıbbi bir ürün mü?", answer: "Hayır, FormStep bir konfor tabanlığıdır. Ayağınla ilgili bir rahatsızlığın varsa bir uzmana danışmanı öneririz." },
+  { id: "4", question: "Hangi model bana uygun?", answer: "Günlük kullanım için M100, içe ya da dışa basıyorsan M300, topuk dikeni ya da topukta hassasiyet yaşıyorsan M900. Model seçici bölümü de sana yardımcı olur." },
+  { id: "5", question: "Nereden satın alabilirim?", answer: "FormStep'i Amazon, Trendyol ve Hepsiburada'daki resmî mağazalarımızdan satın alabilirsin. Tüm modeller tanesi 200 TL." },
+  { id: "6", question: "İade edebilir miyim?", answer: "Evet. İade ve cayma hakkı, ürünü satın aldığın pazaryerinin (Amazon, Trendyol ya da Hepsiburada) iade süreci üzerinden kullanılır. Teslimden itibaren 14 günlük cayma hakkın saklıdır." },
+  { id: "7", question: "Tıbbi bir ürün mü?", answer: "Hayır, FormStep tıbbi cihaz değil, bir konfor tabanlığıdır. Topuk dikeni gibi bir rahatsızlığın varsa tabanlığı bir uzmana danışarak kullanmanı öneririz." },
 ];

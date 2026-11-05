@@ -9,19 +9,19 @@ const needs = [
   {
     id: "gunluk",
     label: "Günlük kullanım",
-    hint: "İş, okul, şehirde yürümek",
+    hint: "İş, okul, şehirde gün boyu yürümek",
     model: "m100",
   },
   {
     id: "ayakta",
-    label: "Uzun saatler ayakta",
-    hint: "Vardiya, mağaza, mutfak",
+    label: "İçe ya da dışa basıyorum",
+    hint: "Ayakkabımın bir yanı daha çabuk aşınıyor",
     model: "m300",
   },
   {
     id: "tempo",
-    label: "Yoğun tempo ve spor",
-    hint: "Yürüyüş, antrenman, seyahat",
+    label: "Topuğum hassas",
+    hint: "Topuk dikeni, topukta ağrı ya da hassasiyet",
     model: "m900",
   },
 ] as const;
@@ -50,7 +50,7 @@ export function Finder({ mapping }: { mapping: Record<"gunluk" | "ayakta" | "tem
             uygun?
           </h2>
           <p className="mt-5 max-w-sm leading-7 text-ink/65">
-            Gününün nasıl geçtiğini seç, sana en yakın FormStep&apos;i gösterelim.
+            Sana en uygun durumu seç, ihtiyacına en yakın FormStep&apos;i gösterelim.
           </p>
           <div className="mt-8 grid gap-3" role="radiogroup" aria-label="İhtiyacın">
             {needs.map((n) => {
@@ -109,7 +109,7 @@ export function Finder({ mapping }: { mapping: Record<"gunluk" | "ayakta" | "tem
             </p>
             <p className="display relative mt-3 text-6xl">{model.code}</p>
             <p className="relative mt-2 max-w-xs" style={{ color: model.muted }}>
-              {model.title}
+              {model.tag}. {model.title}
             </p>
             <div className="relative mx-auto mt-2 w-[85%] animate-[fs-finder_0.9s_cubic-bezier(.16,1,.3,1)_both]">
               <Image

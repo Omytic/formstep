@@ -1,5 +1,6 @@
 import { cache } from "react";
 import { isPreview, supabaseConfigured } from "@/lib/env";
+import { SALES_ENABLED } from "@/lib/features";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { previewFaqs, previewProducts, previewSettings } from "./preview";
 import type { Claim, Faq, Product, ProductSlug, StoreSettings } from "./types";
@@ -12,6 +13,8 @@ const FALLBACK_IMAGES: Record<ProductSlug, Product["images"]> = {
 
 /** Supabase yokken (ve önizleme kapalıyken) ürün kimlikleri satışa kapalı olarak görünür. */
 function offlineCatalog(): Product[] {
+  // Satış kapalıyken numara ve fiyat yalnızca bilgi amaçlı gösterilir.
+  if (!SALES_ENABLED) return previewProducts;
   return previewProducts.map((p) => ({ ...p, status: "draft", variants: [] }));
 }
 
@@ -66,7 +69,9 @@ export const getCatalog = cache(async (): Promise<Product[]> => {
   }
   return data.map((row) => {
     const p = mapProduct(row);
-    if (p.status !== "published") return { ...p, variants: [] };
+    // Satış kapalıyken taslak ürünler de tanıtılır; yalnızca arşivlenenler gizlenir.
+    const visible = SALES_ENABLED ? p.status === "published" : p.status !== "archived";
+    if (!visible) return { ...p, variants: [] };
     return { ...p, variants: p.variants.filter((v) => v.active) };
   });
 });

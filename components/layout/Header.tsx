@@ -3,10 +3,11 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Menu, ShoppingBag, User, X } from "lucide-react";
+import { ArrowUpRight, Menu, ShoppingBag, User, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useCart } from "@/components/cart/CartProvider";
 import { SocialRow } from "@/components/layout/SocialRow";
+import { ACCOUNTS_ENABLED, SALES_ENABLED } from "@/lib/features";
 
 const links = [
   { href: "/urun/m100", label: "M100" },
@@ -25,7 +26,7 @@ export function Header({ announcement, instagram, x }: { announcement?: string; 
   const prevCount = useRef(count);
   const pathname = usePathname();
   // Üstü koyu renkli sayfalarda menü şeffaf başlar; açık renkli sayfalarda baştan koyu cam zemin alır.
-  const darkTop = pathname === "/" || /^\/urun\/m(3|9)00/.test(pathname) || pathname.startsWith("/hesabim") || pathname.startsWith("/bilgilendirme");
+  const darkTop = pathname === "/" || /^\/urun\/m(3|9)00/.test(pathname) || pathname.startsWith("/bilgilendirme");
 
   useEffect(() => {
     const onScroll = () => {
@@ -81,17 +82,25 @@ export function Header({ announcement, instagram, x }: { announcement?: string; 
 
           <div className="relative z-10 flex items-center gap-1">
             <SocialRow instagram={instagram} x={x} className="mr-1" />
-            <Link href="/hesabim" className="hidden size-11 place-items-center rounded-full transition hover:bg-white/10 md:grid" aria-label="Hesabım">
-              <User size={19} />
-            </Link>
-            <button type="button" onClick={() => setOpen(true)} className="relative grid size-11 place-items-center rounded-full transition hover:bg-white/10" aria-label={`Sepet, ${count} ürün`}>
-              <ShoppingBag size={19} className={bump ? "animate-[fs-bag_0.6s_cubic-bezier(.16,1,.3,1)]" : ""} />
-              {count > 0 ? (
-                <span key={count} className="fs-pop absolute right-1 top-1 grid min-w-[18px] place-items-center rounded-full bg-blue px-1 text-[10px] font-bold leading-[18px] text-white">
-                  {count}
-                </span>
-              ) : null}
-            </button>
+            {ACCOUNTS_ENABLED ? (
+              <Link href="/hesabim" className="hidden size-11 place-items-center rounded-full transition hover:bg-white/10 md:grid" aria-label="Hesabım">
+                <User size={19} />
+              </Link>
+            ) : null}
+            {SALES_ENABLED ? (
+              <button type="button" onClick={() => setOpen(true)} className="relative grid size-11 place-items-center rounded-full transition hover:bg-white/10" aria-label={`Sepet, ${count} ürün`}>
+                <ShoppingBag size={19} className={bump ? "animate-[fs-bag_0.6s_cubic-bezier(.16,1,.3,1)]" : ""} />
+                {count > 0 ? (
+                  <span key={count} className="fs-pop absolute right-1 top-1 grid min-w-[18px] place-items-center rounded-full bg-blue px-1 text-[10px] font-bold leading-[18px] text-white">
+                    {count}
+                  </span>
+                ) : null}
+              </button>
+            ) : (
+              <Link href="/#satin-al" className="ml-1 hidden items-center gap-1.5 rounded-full bg-blue px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#1c68d4] sm:inline-flex">
+                Satın al <ArrowUpRight size={15} />
+              </Link>
+            )}
             <button type="button" onClick={() => setMenu((v) => !v)} className="grid size-11 place-items-center rounded-full transition hover:bg-white/10 md:hidden" aria-expanded={menu} aria-controls="mobil-menu" aria-label={menu ? "Menüyü kapat" : "Menüyü aç"}>
               {menu ? <X size={21} /> : <Menu size={21} />}
             </button>
@@ -104,7 +113,11 @@ export function Header({ announcement, instagram, x }: { announcement?: string; 
         <div id="mobil-menu" className="fs-backdrop fixed inset-0 z-40 bg-night pt-20 text-paper md:hidden" role="dialog" aria-modal="true" aria-label="Menü">
           <div aria-hidden className="pointer-events-none absolute inset-0 bg-[radial-gradient(60%_40%_at_80%_20%,rgba(36,119,234,0.3),transparent_70%)]" />
           <nav className="fs-enter relative flex flex-col px-6" aria-label="Mobil menü">
-            {[...links, { href: "/hesabim", label: "Hesabım" }, { href: "/sepet", label: "Sepet" }].map((l) => (
+            {[
+              ...links,
+              ...(ACCOUNTS_ENABLED ? [{ href: "/hesabim", label: "Hesabım" }] : []),
+              SALES_ENABLED ? { href: "/sepet", label: "Sepet" } : { href: "/#satin-al", label: "Satın al" },
+            ].map((l) => (
               <Link key={l.href} href={l.href} onClick={() => setMenu(false)} className="display border-b border-white/10 py-5 text-4xl">
                 {l.label}
               </Link>

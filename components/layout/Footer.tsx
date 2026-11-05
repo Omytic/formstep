@@ -12,9 +12,9 @@ export async function Footer() {
   const { marketplaces: m, claims } = await getSettings();
   const claim = claims.find((c) => c.active)?.text;
   const stores = [
-    { href: m.amazon, label: "Amazon", src: "/assets/brand/stores/amazon.png", w: 319, h: 96 },
-    { href: m.trendyol, label: "Trendyol", src: "/assets/brand/stores/trendyol.png", w: 418, h: 162 },
-    { href: m.hepsiburada, label: "Hepsiburada", src: "/assets/brand/stores/hepsiburada.png", w: 565, h: 162 },
+    { href: m.amazon, label: "Amazon", src: "/assets/brand/stores/amazon-logo.png", w: 319, h: 96, height: 22 },
+    { href: m.trendyol, label: "Trendyol", src: "/assets/brand/stores/trendyol-logo.png", w: 418, h: 96, height: 17 },
+    { href: m.hepsiburada, label: "Hepsiburada", src: "/assets/brand/stores/hepsiburada-logo.png", w: 565, h: 96, height: 17 },
   ].filter((s) => s.href);
 
   return (
@@ -36,18 +36,18 @@ export async function Footer() {
               <p className="kicker text-mist/70">Modeller</p>
               <ul className="mt-4 space-y-3 text-sm">
                 <li><Link className="hover:text-sky" href="/urun/m100">M100 · Günlük konfor</Link></li>
-                <li><Link className="hover:text-sky" href="/urun/m300">M300 · Destek ve denge</Link></li>
-                <li><Link className="hover:text-sky" href="/urun/m900">M900 · Premium konfor</Link></li>
+                <li><Link className="hover:text-sky" href="/urun/m300">M300 · İçe ve dışa basma</Link></li>
+                <li><Link className="hover:text-sky" href="/urun/m900">M900 · Topuk desteği</Link></li>
                 <li><Link className="hover:text-sky" href="/#secici">Hangisi bana uygun?</Link></li>
               </ul>
             </div>
             <div>
               <p className="kicker text-mist/70">Yardım</p>
               <ul className="mt-4 space-y-3 text-sm">
-                {LEGAL_NAV.slice(0, 4).map((l) => (
+                {LEGAL_NAV.map((l) => (
                   <li key={l.slug}><Link className="hover:text-sky" href={`/bilgilendirme/${l.slug}`}>{l.title}</Link></li>
                 ))}
-                <li><Link className="hover:text-sky" href="/hesabim">Siparişlerim</Link></li>
+                <li><ConsentLink className="text-left hover:text-sky" /></li>
               </ul>
             </div>
             <div className="col-span-2 sm:col-span-1">
@@ -63,7 +63,7 @@ export async function Footer() {
                         aria-label={`${s.label} mağazamız`}
                         className="group flex h-10 w-full items-center justify-between gap-3 overflow-hidden rounded-xl border border-white/15 px-3 transition hover:border-sky hover:bg-white/[0.04]"
                       >
-                        <Image src={s.src} alt="" width={s.w} height={s.h} className="w-auto max-w-[7.25rem] object-contain object-left" style={{ height: 22, width: "auto" }} />
+                        <Image src={s.src} alt="" width={s.w} height={s.h} className="w-auto max-w-[7.25rem] object-contain object-left" style={{ height: s.height, width: "auto" }} />
                         <ArrowUpRight size={15} className="shrink-0 text-mist transition group-hover:-translate-y-px group-hover:translate-x-px group-hover:text-sky" />
                       </a>
                     </li>
@@ -82,14 +82,8 @@ export async function Footer() {
 
         <div className="mt-6 flex flex-col gap-4 border-t border-white/10 pt-6 text-xs text-mist/70 md:flex-row md:items-center md:justify-between">
           <p>© {new Date().getFullYear()} FormStep · {SELLER_LEGAL_NAME}</p>
-          <div className="flex flex-wrap gap-x-5 gap-y-2">
-            {LEGAL_NAV.slice(4).map((l) => (
-              <Link key={l.slug} className="hover:text-paper" href={`/bilgilendirme/${l.slug}`}>{l.title}</Link>
-            ))}
-            <ConsentLink className="hover:text-paper" />
-          </div>
+          <p>FormStep ürünleri Amazon, Trendyol ve Hepsiburada&apos;daki resmî mağazalarımızda satılır.</p>
         </div>
-        <p className="mt-4 text-xs text-mist/50">Ödemeler PayTR güvencesiyle alınır. Kart bilgilerin FormStep tarafından görülmez ve saklanmaz.</p>
       </div>
     </footer>
   );

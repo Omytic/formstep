@@ -3,6 +3,7 @@ import { ActionForm, F, Toggle } from "@/components/admin/ActionForm";
 import { getSettingsRaw } from "@/lib/admin";
 import { requireAdmin } from "@/lib/auth";
 import { paytrConfigured, paytrTestMode, siteUrl } from "@/lib/env";
+import { SALES_ENABLED } from "@/lib/features";
 
 type R = Record<string, unknown>;
 const k2tl = (v: unknown) => (typeof v === "number" ? (v / 100).toFixed(2).replace(".", ",") : "");
@@ -19,6 +20,7 @@ export default async function Page() {
     <div className="fs-enter space-y-6">
       <h1 className="display text-4xl">Ayarlar</h1>
 
+      {SALES_ENABLED ? (
       <section className="card p-6">
         <h2 className="text-lg font-semibold">Kargo</h2>
         <p className="mt-1 text-sm text-ink/55">Kargo ücreti girilmeden ödeme açılmaz. Tüm siparişlerde ücretsiz kargo için 0 yaz.</p>
@@ -32,10 +34,11 @@ export default async function Page() {
           </div>
         </ActionForm>
       </section>
+      ) : null}
 
       <section className="card p-6">
         <h2 className="text-lg font-semibold">Satıcı bilgileri</h2>
-        <p className="mt-1 text-sm text-ink/55">Mesafeli satış sözleşmesi, ön bilgilendirme formu ve alt bilgide görünür.</p>
+        <p className="mt-1 text-sm text-ink/55">İletişim sayfasında, KVKK aydınlatma metninde ve diğer yasal metinlerde görünür.</p>
         <ActionForm action={saveSetting} className="mt-4">
           <input type="hidden" name="key" value="public.seller" />
           <div className="grid gap-4 md:grid-cols-2">
@@ -50,6 +53,8 @@ export default async function Page() {
         </ActionForm>
       </section>
 
+      {SALES_ENABLED ? (
+      <>
       <section className="card p-6">
         <h2 className="text-lg font-semibold">Bildirimler</h2>
         <ActionForm action={saveSetting} className="mt-4">
@@ -80,6 +85,16 @@ export default async function Page() {
           </ActionForm>
         ) : null}
       </section>
+      </>
+      ) : (
+        <section className="card p-6">
+          <h2 className="text-lg font-semibold">Site modu</h2>
+          <p className="mt-1 text-sm leading-6 text-ink/60">
+            formstep.tr şu an tanıtım sitesi olarak çalışıyor: satış Amazon, Trendyol ve Hepsiburada mağazalarında yapılır; sepet, ödeme, kargo ve müşteri üyeliği kapalı.
+            İleride sitede satış açmak için Vercel&apos;de <code className="rounded bg-paper px-1.5 py-0.5">NEXT_PUBLIC_SALES_ENABLED=1</code> ve PayTR anahtarları gerekir.
+          </p>
+        </section>
+      )}
     </div>
   );
 }

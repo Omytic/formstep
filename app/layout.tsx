@@ -1,10 +1,11 @@
 import type { Metadata, Viewport } from "next";
+import { siteUrl } from "@/lib/env";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"),
+  metadataBase: new URL(siteUrl()),
   title: { default: "FormStep — Memory foam tabanlık", template: "%s — FormStep" },
-  description: "FormStep memory foam tabanlıklar: M100, M300 ve M900. Her adımda daha fazla konfor.",
+  description: "Amazon Türkiye'nin en çok satan tabanlığı FormStep: günlük kullanım için M100, içe ve dışa basmaya özel M300, topuk desteği için M900. İki katmanlı memory foam tabanlıklar.",
   applicationName: "FormStep",
   openGraph: {
     title: "FormStep — Her adımda daha fazla konfor",

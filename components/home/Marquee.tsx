@@ -7,7 +7,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 gsap.registerPlugin(ScrollTrigger);
 
 const top = ["Memory foam", "M100", "Her adımda konfor", "M300", "Ayağının şeklini alır", "M900"];
-const bottom = ["Günlük konfor", "Destek ve denge", "Premium konfor", "Üç model", "Tek amaç"];
+const bottom = ["Günlük konfor", "İçe ve dışa basma desteği", "Topuk desteği", "Üç model", "Tek amaç"];
 
 function Star() {
   return (

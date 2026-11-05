@@ -3,14 +3,15 @@
 import { adm } from "@/lib/admin-path";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { SALES_ENABLED } from "@/lib/features";
 import { Boxes, FileText, LayoutDashboard, Package, Settings, ShoppingCart, Tag } from "lucide-react";
 
 const items = [
   { href: adm(""), label: "Özet", icon: LayoutDashboard },
-  { href: adm("/siparisler"), label: "Siparişler", icon: ShoppingCart },
+  ...(SALES_ENABLED ? [{ href: adm("/siparisler"), label: "Siparişler", icon: ShoppingCart }] : []),
   { href: adm("/stok"), label: "Stok", icon: Boxes },
   { href: adm("/urunler"), label: "Ürünler", icon: Package },
-  { href: adm("/kuponlar"), label: "Kuponlar", icon: Tag },
+  ...(SALES_ENABLED ? [{ href: adm("/kuponlar"), label: "Kuponlar", icon: Tag }] : []),
   { href: adm("/icerik"), label: "İçerik", icon: FileText },
   { href: adm("/ayarlar"), label: "Ayarlar", icon: Settings },
 ];

@@ -1,5 +1,6 @@
 "use server";
 
+import { ACCOUNTS_ENABLED } from "@/lib/features";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { requireUser } from "@/lib/auth";
@@ -11,6 +12,7 @@ export type FormState = { ok: boolean; message: string; errors?: Record<string, 
 const PREVIEW: FormState = { ok: false, message: "Önizleme modunda kayıt yapılamaz." };
 
 export async function saveAddress(_: FormState, form: FormData): Promise<FormState> {
+  if (!ACCOUNTS_ENABLED) return { ok: false, message: "Üyelik şu an kapalı." };
   const user = await requireUser();
   if (user.preview) return PREVIEW;
   const parsed = addressSchema.safeParse(Object.fromEntries(form));
@@ -31,6 +33,7 @@ export async function saveAddress(_: FormState, form: FormData): Promise<FormSta
 }
 
 export async function deleteAddress(form: FormData): Promise<void> {
+  if (!ACCOUNTS_ENABLED) return;
   const user = await requireUser();
   if (user.preview) return;
   const supabase = await supabaseServer();
@@ -39,6 +42,7 @@ export async function deleteAddress(form: FormData): Promise<void> {
 }
 
 export async function saveProfile(_: FormState, form: FormData): Promise<FormState> {
+  if (!ACCOUNTS_ENABLED) return { ok: false, message: "Üyelik şu an kapalı." };
   const user = await requireUser();
   if (user.preview) return PREVIEW;
   const parsed = z
@@ -58,6 +62,7 @@ export async function saveProfile(_: FormState, form: FormData): Promise<FormSta
 }
 
 export async function requestDeletion(prev: FormState): Promise<FormState> {
+  if (!ACCOUNTS_ENABLED) return { ok: false, message: "Üyelik şu an kapalı." };
   void prev;
   const user = await requireUser();
   if (user.preview) return PREVIEW;

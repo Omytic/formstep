@@ -3,7 +3,9 @@
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { z } from "zod";
+import { adm } from "@/lib/admin-path";
 import { siteUrl, supabaseConfigured } from "@/lib/env";
+import { ACCOUNTS_ENABLED } from "@/lib/features";
 import { clientIp, rateLimit } from "@/lib/security/rate-limit";
 import { safeInternalPath } from "@/lib/security/text";
 import { supabaseServer } from "@/lib/supabase/server";
@@ -48,11 +50,14 @@ export async function signIn(_: AuthState, form: FormData): Promise<AuthState> {
   if (!parsed.success) return { ok: false, message: "E-posta ve şifreni kontrol et." };
   const supabase = await supabaseServer();
   const { error } = await supabase.auth.signInWithPassword(parsed.data);
-  if (error) return { ok: false, message: error.message.includes("confirm") ? "Önce e-postanı doğrulaman gerekiyor." : "E-posta veya şifre hatalı." };
-  redirect(safeInternalPath(String(form.get("next") ?? ""), "/hesabim"));
+  if (error) return { ok: false, message: error.message.includes("confirm") ? "Önce e-postanı doğrulaman gerekiyor." : "Kullanıcı adı veya şifre hatalı." };
+  const fallback = ACCOUNTS_ENABLED ? "/hesabim" : adm();
+  const next = safeInternalPath(String(form.get("next") ?? ""), fallback);
+  redirect(ACCOUNTS_ENABLED || next.startsWith(adm()) ? next : adm());
 }
 
 export async function signUp(_: AuthState, form: FormData): Promise<AuthState> {
+  if (!ACCOUNTS_ENABLED) return NOT_READY;
   if (!supabaseConfigured()) return NOT_READY;
   if (await limited("signup")) return { ok: false, message: "Çok fazla deneme. Birkaç dakika sonra tekrar dene." };
   const parsed = z
@@ -76,6 +81,7 @@ export async function signUp(_: AuthState, form: FormData): Promise<AuthState> {
 }
 
 export async function requestReset(_: AuthState, form: FormData): Promise<AuthState> {
+  if (!ACCOUNTS_ENABLED) return NOT_READY;
   if (!supabaseConfigured()) return NOT_READY;
   if (await limited("reset")) return { ok: false, message: "Çok fazla deneme. Birkaç dakika sonra tekrar dene." };
   const parsed = email.safeParse(form.get("email"));
@@ -101,5 +107,5 @@ export async function signOut(): Promise<void> {
     const supabase = await supabaseServer();
     await supabase.auth.signOut();
   }
-  redirect("/");
+  redirect(ACCOUNTS_ENABLED ? "/" : adm("/giris"));
 }

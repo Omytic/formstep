@@ -5,6 +5,7 @@ import { Consent } from "@/components/layout/Consent";
 import { Footer } from "@/components/layout/Footer";
 import { Header } from "@/components/layout/Header";
 import { PreviewBanner } from "@/components/layout/PreviewBanner";
+import { SALES_ENABLED } from "@/lib/features";
 import { getSettings } from "@/lib/store/catalog";
 
 export default async function StoreLayout({ children }: { children: React.ReactNode }) {
@@ -18,8 +19,12 @@ export default async function StoreLayout({ children }: { children: React.ReactN
       />
       <main id="icerik">{children}</main>
       <Footer />
-      <CartDrawer />
-      <AddedToast />
+      {SALES_ENABLED ? (
+        <>
+          <CartDrawer />
+          <AddedToast />
+        </>
+      ) : null}
       <Consent gaId={process.env.NEXT_PUBLIC_GA_ID?.trim() || null} />
       <PreviewBanner />
     </CartProvider>

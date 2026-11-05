@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Check } from "lucide-react";
 import { Faq } from "@/components/home/Faq";
 import { HowTo } from "@/components/home/HowTo";
 import { homeModels } from "@/components/home/models";
@@ -10,7 +10,7 @@ import { ScrollEffects } from "@/components/home/ScrollEffects";
 import { ProductView } from "@/components/product/ProductView";
 import { siteUrl } from "@/lib/env";
 import { formatPrice } from "@/lib/money";
-import { fromPrice, getCatalog, getFaqs, getProduct, getSettings, isSellable } from "@/lib/store/catalog";
+import { fromPrice, getCatalog, getFaqs, getProduct, getSettings } from "@/lib/store/catalog";
 
 export const revalidate = 60;
 
@@ -36,9 +36,12 @@ export default async function ProductPage({ params }: Props) {
   if (!product || product.status === "archived") notFound();
   const model = homeModels.find((m) => m.slug === product.slug)!;
   const others = catalog.filter((p) => p.slug !== product.slug);
-  const features = product.features.length ? product.features : model.facts.map((f) => ({ label: f, body: "" }));
+  const features = product.features.length ? product.features : model.features;
 
-  const jsonLd = isSellable(product)
+  const m = settings.marketplaces;
+  const offerUrl = model.amazon || m.amazon || m.trendyol || m.hepsiburada;
+  const price = fromPrice(product);
+  const jsonLd = price !== null
     ? {
         "@context": "https://schema.org",
         "@type": "Product",
@@ -46,21 +49,22 @@ export default async function ProductPage({ params }: Props) {
         description: product.description,
         brand: { "@type": "Brand", name: "FormStep" },
         image: product.images.map((i) => `${siteUrl()}${i.src}`),
-        offers: product.variants.map((v) => ({
+        url: `${siteUrl()}/urun/${product.slug}`,
+        offers: {
           "@type": "Offer",
-          sku: v.sku,
-          price: (v.priceKurus / 100).toFixed(2),
+          price: (price / 100).toFixed(2),
           priceCurrency: "TRY",
-          availability: v.stock > 0 ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
-          url: `${siteUrl()}/urun/${product.slug}`,
-        })),
+          availability: "https://schema.org/InStock",
+          url: offerUrl || `${siteUrl()}/urun/${product.slug}`,
+          seller: { "@type": "Organization", name: "OMY Ticaret" },
+        },
       }
     : null;
 
   return (
     <>
       {jsonLd ? <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }} /> : null}
-      <ProductView product={product} model={model} shipping={settings.shipping} marketplaces={settings.marketplaces} claim={settings.claims.find((c) => c.active)?.text} />
+      <ProductView product={product} model={model} marketplaces={settings.marketplaces} claim={settings.claims.find((c) => c.active)?.text} />
 
       <section className="bg-white py-24 md:py-32" aria-labelledby="ozellik-baslik">
         <div className="mx-auto max-w-7xl px-5">
@@ -77,6 +81,25 @@ export default async function ProductPage({ params }: Props) {
                 {f.body ? <span className="relative mt-2 block leading-7 text-ink/60 transition-colors group-hover:text-white/85">{f.body}</span> : null}
               </li>
             ))}
+          </ul>
+        </div>
+      </section>
+
+      <section className="relative overflow-hidden py-20 md:py-28" style={{ backgroundColor: model.bg, color: model.fg }} aria-labelledby="kimler-baslik">
+        <div className="mx-auto grid max-w-7xl gap-10 px-5 lg:grid-cols-12 lg:items-end">
+          <div className="lg:col-span-5">
+            <p className="kicker" style={{ color: model.accent }} data-reveal>Kimler için?</p>
+            <h2 id="kimler-baslik" className="display mt-4 text-5xl md:text-6xl" data-reveal>{model.tag}.</h2>
+            <p className="mt-5 max-w-md leading-7" style={{ color: model.muted }} data-reveal>{model.body}</p>
+          </div>
+          <ul className="grid gap-3 lg:col-span-6 lg:col-start-7" data-reveal-stagger>
+            {model.forWho.map((w) => (
+              <li key={w} className="flex items-center gap-4 rounded-2xl px-5 py-4 text-lg font-semibold" style={{ backgroundColor: model.fg === "#10131D" ? "white" : "rgba(255,255,255,0.06)" }}>
+                <span className="grid size-9 shrink-0 place-items-center rounded-full text-white" style={{ backgroundColor: model.accent }}><Check size={17} /></span>
+                {w}
+              </li>
+            ))}
+            <li className="px-1 pt-1 text-xs" style={{ color: model.muted }}>FormStep tıbbi cihaz değil, konfor tabanlığıdır. Bir rahatsızlığın varsa bir uzmana danışmanı öneririz.</li>
           </ul>
         </div>
       </section>
@@ -109,7 +132,7 @@ export default async function ProductPage({ params }: Props) {
                   <div className="flex-1">
                     <p className="kicker" style={{ color: m.accent }}>{m.tag}</p>
                     <p className="display mt-2 text-5xl">{p.name}</p>
-                    <p className="mt-2 text-sm" style={{ color: m.muted }}>{price !== null ? `${formatPrice(price)}` : "Sitede çok yakında"}</p>
+                    <p className="mt-2 text-sm" style={{ color: m.muted }}>{price !== null ? `${formatPrice(price)} · ${m.tag}` : m.tag}</p>
                   </div>
                   <span className="grid size-12 shrink-0 place-items-center rounded-full border transition-all duration-500 group-hover:translate-x-1" style={{ borderColor: m.muted }}>
                     <ArrowRight size={18} />

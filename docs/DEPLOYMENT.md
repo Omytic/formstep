@@ -1,46 +1,58 @@
-# Yayına alma
+# Yayına alma (formstep.tr)
 
-Hepsi **FormStep'e özel ve yeni**: Supabase projesi, Vercel projesi, PayTR mağazası. SERYN'e dokunulmaz.
+formstep.tr şu an **tanıtım sitesi**: satışlar Amazon, Trendyol ve Hepsiburada'da. Sepet, ödeme (PayTR), kargo ve
+müşteri üyeliği kapalı; kodları duruyor ve `lib/features.ts` içindeki iki bayrakla açılabilir. Yalnızca yönetim paneli açık.
 
 ## 1. Supabase
-1. supabase.com → New project (`formstep`, bölge: Frankfurt).
-2. `supabase/README.md`'deki gibi migration'ları uygula.
-3. Authentication → URL Configuration:
-   - Site URL: `https://formstep.tr`
-   - Redirect URLs: `https://formstep.tr/auth/callback`, `http://localhost:3000/auth/callback`
-4. Authentication → Email templates: Türkçe metinler (isteğe bağlı) · SMTP için Resend bağlanabilir.
-5. İlk yöneticiyi oluştur (`scripts/create-admin.mjs`).
+1. Yeni migration'ları uygula (proje zaten bağlı): `npx supabase db push`
+   - `…0900_showcase_mode.sql`: modelleri yayına alır, M100/M300/M900 açıklamalarını günceller, kargo SSS'sini kaldırır.
+2. Authentication → URL Configuration → Site URL: `https://formstep.tr`
+3. Yönetici hesabı. Giriş ekranında kullanıcı adı **admin** yazılır; arka planda `admin@formstep.tr` hesabına girer.
+   Hesap henüz yoksa Cursor terminalinde bir kez çalıştır (şifreyi kendin yaz, hiçbir dosyaya kaydetme):
+
+   ```bash
+   node --env-file=.env.local scripts/create-admin.mjs admin@formstep.tr 'ŞİFREN' owner
+   ```
+
+   Hesap zaten varsa ve şifreyi değiştirmek istersen: Supabase → Authentication → Users → admin@formstep.tr → Reset password.
 
 ## 2. Vercel
 1. Yeni proje → bu klasörün GitHub deposu. Framework: Next.js.
-2. Environment Variables (`.env.example`'daki adlarla):
+2. Environment Variables:
 
-| Değişken | Nerede | Not |
+| Değişken | Not |
+|---|---|
+| NEXT_PUBLIC_SITE_URL | `https://formstep.tr` |
+| NEXT_PUBLIC_SUPABASE_URL / NEXT_PUBLIC_SUPABASE_ANON_KEY | Supabase → Settings → API |
+| SUPABASE_SERVICE_ROLE_KEY | Gizli; asla tarayıcıya gitmez |
+| NEXT_PUBLIC_ADMIN_PATH | `/secretgate` (varsayılan) |
+| NEXT_PUBLIC_GA_ID | İsteğe bağlı; yalnızca çerez onayından sonra yüklenir |
+
+   PayTR, Resend ve CRON değişkenleri satış kapalıyken gerekmez.
+
+## 3. Alan adı: formstep.tr
+1. Vercel → proje → Settings → Domains → `formstep.tr` ve `www.formstep.tr` ekle. `formstep.tr`'yi ana (primary) yap.
+2. Alan adını aldığın firmanın DNS panelinde:
+
+| Tür | Ad (host) | Değer |
 |---|---|---|
-| NEXT_PUBLIC_SITE_URL | Production | `https://formstep.tr` |
-| NEXT_PUBLIC_SUPABASE_URL / ANON_KEY | Hepsi | Supabase → Settings → API |
-| SUPABASE_SERVICE_ROLE_KEY | Hepsi (gizli) | Asla tarayıcıya gitmez |
-| PAYTR_MERCHANT_ID / KEY / SALT | Hepsi (gizli) | FormStep'in kendi PayTR mağazası |
-| PAYTR_TEST_MODE | Hepsi | Önce `1`, test ödemesi başarılı olunca `0` |
-| RESEND_API_KEY, EMAIL_FROM | Production | `FormStep <info@omytic.com>`. Resend'de doğrulanacak alan adı omytic.com. Sipariş bildirimleri de bu adrese gelir. |
-| CRON_SECRET | Production | Uzun rastgele değer |
-| NEXT_PUBLIC_GA_ID | İsteğe bağlı | Yalnızca çerez onayından sonra yüklenir |
-| NEXT_PUBLIC_ADMIN_PATH | İsteğe bağlı | Yönetim panelinin gizli adresi; varsayılan `/secretgate` |
+| A | `@` | `76.76.21.21` |
+| CNAME | `www` | `cname.vercel-dns.com` |
 
-3. Domains → `formstep.tr` ekle, DNS kayıtlarını alan adı sağlayıcısında gir.
-4. `vercel.json` günlük bir zamanlanmış görev tanımlar (ödenmemiş siparişleri kapatır, bekleyen e-postaları yollar).
+   Eski A / AAAA / CNAME kayıtları varsa (park sayfası vb.) sil. Vercel bazen projeye özel bir değer gösterir; ekranda ne yazıyorsa onu kullan.
+3. Yayılması birkaç dakika ile birkaç saat sürer. Vercel SSL sertifikasını kendisi kurar. `www` adresi otomatik olarak `formstep.tr`'ye yönlenir (next.config.ts).
 
-## 3. PayTR
-1. OMY şirketi altında **formstep.tr için ayrı bir PayTR mağazası** iste. (Bildirim URL'si mağaza başına tektir;
-   SERYN'in mağazası kullanılırsa ödeme bildirimleri seryn.com.tr'ye gider ve FormStep siparişleri asla "ödendi" olmaz.)
-2. Mağaza Paneli → Destek & Kurulum → Ayarlar → Bildirim URL: `https://formstep.tr/api/paytr/notify` (HTTPS).
-3. `PAYTR_TEST_MODE=1` ile bir test siparişi ver; PayTR panelinde **Başarılı** görünmeli ve sipariş yönetim panelinde "Ödendi" olmalı.
-4. Sonra `PAYTR_TEST_MODE=0` yap, yönetim paneli → Ayarlar'dan "PayTR onayladı" kutusunu işaretle.
+## 4. Adresler
+- Site: `https://formstep.tr`
+- Yönetim girişi: `https://formstep.tr/secretgate/giris` (panel: `/secretgate`). `/admin`, `/giris`, `/sepet`, `/odeme`, `/hesabim` 404 döner.
 
-## 4. Yönetim panelinden doldurulacaklar
-- Numaralar (36-37 … 45-48) ve 200 TL fiyat migration ile hazır gelir. **Stok** ekranından adetleri gir, sonra Ürünler → her model → **Yayında**.
-- Ayarlar → kargo ücreti + ücretsiz kargo sınırı, satıcı bilgileri (adres, telefon, e-posta, vergi, MERSİS, ETBİS), bildirim e-postası.
-- İçerik → pazaryeri bağlantıları, duyuru şeridi, (kanıtıyla) "en çok satan" iddiası.
-- Yasal metinleri avukat/muhasebeci ile kontrol et; onaylanan metni İçerik → Yasal metinler'e yapıştırabilirsin.
+## 5. Yönetim panelinden
+- **Stok**: numara numara adet.
+- **Ürünler**: açıklama, özellik, görsel, fiyat. Onaylı özellik girersen ürün sayfasındaki varsayılan kartların yerini alır.
+- **İçerik**: pazaryeri bağlantıları, Instagram/X, duyuru şeridi, SSS, model seçici, yasal metinler (istersen avukat onaylı metni buraya yapıştır).
+- **Ayarlar**: satıcı ve iletişim bilgileri (yasal metinlerde görünür).
 
-Özet sayfasındaki **Canlı satış kontrol listesi** 8/8 olmadan canlı ödeme açılmaz.
+## İleride sitede satış açmak
+Vercel'de `NEXT_PUBLIC_SALES_ENABLED=1` (sepet, ödeme, sipariş) ve gerekiyorsa `NEXT_PUBLIC_ACCOUNTS_ENABLED=1` (müşteri üyeliği).
+Ardından FormStep'e ait ayrı bir PayTR mağazası, bildirim URL'si `https://formstep.tr/api/paytr/notify`, `PAYTR_*`, `RESEND_API_KEY`,
+`EMAIL_FROM`, `CRON_SECRET` değişkenleri ve `vercel.json`'a günlük `/api/cron/expire` görevi gerekir. Yasal metinler satış moduna kendiliğinden geçer.

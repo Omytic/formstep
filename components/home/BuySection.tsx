@@ -2,10 +2,9 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowUpRight, ShoppingBag } from "lucide-react";
-import { useState, type PointerEvent } from "react";
-import { useCart } from "@/components/cart/CartProvider";
-import { SizePicker } from "@/components/product/SizePicker";
+import { ArrowRight } from "lucide-react";
+import type { PointerEvent } from "react";
+import { StoreButtons } from "@/components/ui/StoreButtons";
 import { formatPrice } from "@/lib/money";
 import type { Marketplaces, Product } from "@/lib/store/types";
 import { homeModels } from "./models";
@@ -18,14 +17,9 @@ function spotlight(e: PointerEvent<HTMLElement>) {
 
 function BuyCard({ product, marketplaces }: { product: Product; marketplaces: Marketplaces }) {
   const m = homeModels.find((x) => x.slug === product.slug)!;
-  const { add } = useCart();
-  const available = product.variants.filter((v) => v.stock > 0);
-  const [variantId, setVariantId] = useState<string | null>(available.length === 1 ? available[0].id : null);
-  const [hint, setHint] = useState(false);
-  const variant = product.variants.find((v) => v.id === variantId) ?? null;
-  const price = variant?.priceKurus ?? (product.variants.length ? Math.min(...product.variants.map((v) => v.priceKurus)) : null);
-  const sellable = available.length > 0;
-  const firstStore = marketplaces.amazon || marketplaces.trendyol || marketplaces.hepsiburada;
+  const sizes = product.variants.filter((v) => v.active);
+  const price = sizes.length ? Math.min(...sizes.map((v) => v.priceKurus)) : null;
+  const range = sizes.length ? `${sizes[0].sizeLabel.split("-")[0]}–${sizes[sizes.length - 1].sizeLabel.split("-").pop()} numara` : "";
 
   return (
     <article
@@ -33,13 +27,13 @@ function BuyCard({ product, marketplaces }: { product: Product; marketplaces: Ma
       className="spotlight group relative flex h-full flex-col overflow-hidden rounded-[2rem] p-7"
       style={{ backgroundColor: m.bg, color: m.fg }}
     >
-      <div className="flex items-start justify-between">
+      <div className="flex items-start justify-between gap-4">
         <div>
           <p className="kicker" style={{ color: m.accent }}>{m.tag}</p>
           <Link href={`/urun/${product.slug}`} className="display mt-2 block text-5xl hover:opacity-80">{product.name}</Link>
         </div>
         {price !== null ? (
-          <p className="text-right">
+          <p className="shrink-0 text-right">
             <span className="block text-2xl font-bold tabular-nums">{formatPrice(price)}</span>
             <span className="text-xs" style={{ color: m.muted }}>KDV dahil</span>
           </p>
@@ -51,40 +45,14 @@ function BuyCard({ product, marketplaces }: { product: Product; marketplaces: Ma
       </Link>
 
       <div className="mt-auto space-y-4">
-        {sellable ? (
-          <>
-            <div>
-              <p className="mb-2 text-sm font-medium" style={{ color: m.muted }}>
-                {hint && !variant ? <span className="text-warn">Önce numaranı seç</span> : "Numara"}
-              </p>
-              <SizePicker variants={product.variants} value={variantId} onChange={(id) => { setVariantId(id); setHint(false); }} accent={m.accent} tone={m.fg === "#10131D" ? "light" : "dark"} />
-            </div>
-            <button
-              type="button"
-              className="btn btn-block text-white"
-              style={{ backgroundColor: m.accent }}
-              onClick={() => {
-                if (!variant) return setHint(true);
-                add(variant.id, 1, { title: "Sepete eklendi", body: `FormStep ${product.name} · ${variant.sizeLabel}`, image: m.image });
-              }}
-            >
-              <ShoppingBag size={17} /> Sepete ekle
-            </button>
-          </>
-        ) : (
-          <>
-            <p className="text-sm" style={{ color: m.muted }}>Sitede çok yakında. O zamana kadar pazaryeri mağazalarımızda.</p>
-            {firstStore ? (
-              <a href={firstStore} target="_blank" rel="noopener noreferrer" className="btn btn-block border" style={{ borderColor: m.muted }}>
-                Pazaryerinde gör <ArrowUpRight size={16} />
-              </a>
-            ) : (
-              <Link href={`/urun/${product.slug}`} className="btn btn-block border" style={{ borderColor: m.muted }}>
-                {product.name}&apos;ü incele
-              </Link>
-            )}
-          </>
-        )}
+        <p className="text-sm leading-6" style={{ color: m.muted }}>
+          {m.forWho.slice(0, 2).join(" · ")}
+          {range ? <><br />{range}</> : null}
+        </p>
+        <StoreButtons marketplaces={marketplaces} overrides={{ amazon: m.amazon }} product={product.name} />
+        <Link href={`/urun/${product.slug}`} className="flex items-center justify-center gap-1.5 pt-1 text-sm font-semibold hover:underline" style={{ color: m.fg }}>
+          {product.name}&apos;ü yakından incele <ArrowRight size={15} />
+        </Link>
       </div>
     </article>
   );
@@ -100,11 +68,11 @@ export function BuySection({ products, marketplaces }: { products: Product[]; ma
             <h2 id="satin-al-baslik" className="display mt-4 text-5xl md:text-7xl" data-reveal>
               Üç model.
               <br />
-              Tek karar.
+              Üç resmî mağaza.
             </h2>
           </div>
           <p className="max-w-sm leading-7 text-ink/65" data-reveal>
-            Numaranı seç, sepete ekle. Ödemeni PayTR güvencesiyle kartınla yap; siparişini e-postayla takip et.
+            FormStep&apos;i Amazon, Trendyol ve Hepsiburada&apos;daki resmî mağazalarımızdan al. Teslimat ve iade, alışveriş yaptığın mağazanın güvencesiyle.
           </p>
         </div>
         <div className="mt-14 grid gap-5 md:grid-cols-3" data-reveal-stagger>

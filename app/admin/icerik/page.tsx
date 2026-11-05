@@ -67,8 +67,8 @@ export default async function Page() {
           <input type="hidden" name="key" value="public.finder" />
           <div className="grid gap-4 md:grid-cols-3">
             <div><label className="label">Günlük kullanım</label>{sel("gunluk", finder.gunluk ?? "m100")}</div>
-            <div><label className="label">Uzun saatler ayakta</label>{sel("ayakta", finder.ayakta ?? "m300")}</div>
-            <div><label className="label">Yoğun tempo ve spor</label>{sel("tempo", finder.tempo ?? "m900")}</div>
+            <div><label className="label">İçe ya da dışa basıyorum</label>{sel("ayakta", finder.ayakta ?? "m300")}</div>
+            <div><label className="label">Topuğum hassas</label>{sel("tempo", finder.tempo ?? "m900")}</div>
           </div>
         </ActionForm>
       </section>

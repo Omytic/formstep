@@ -8,8 +8,12 @@ export const SELLER_LEGAL_NAME = "OMY TEKSTİL TURİZM GIDA SANAYİ TİCARET Lİ
 /** İletişim ve sözleşmelerde görünen kısa ünvan. */
 export const SELLER_DISPLAY_NAME = "OMY Tekstil Turizm Gıda San. Tic. Ltd. Şti.";
 
+/** Sitenin alan adı. Canlıda NEXT_PUBLIC_SITE_URL boş kalsa bile https://formstep.tr kullanılır. */
+export const SITE_DOMAIN = "https://formstep.tr";
+
 export function siteUrl(): string {
-  return (process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000").replace(/\/$/, "");
+  const fallback = process.env.NODE_ENV === "production" ? SITE_DOMAIN : "http://localhost:3000";
+  return (process.env.NEXT_PUBLIC_SITE_URL || fallback).replace(/\/$/, "");
 }
 
 export function supabaseConfigured(): boolean {

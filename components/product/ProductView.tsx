@@ -2,47 +2,35 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowUpRight, Check, CreditCard, RotateCcw, ShoppingBag, Truck } from "lucide-react";
+import { ArrowUpRight, BadgeCheck, Ruler, Store } from "lucide-react";
 import { useEffect, useRef, useState, type PointerEvent } from "react";
 import gsap from "gsap";
-import { useCart } from "@/components/cart/CartProvider";
-import { QtyStepper } from "@/components/ui/QtyStepper";
 import { formatPrice } from "@/lib/money";
-import type { Marketplaces, Product, Shipping } from "@/lib/store/types";
+import type { Marketplaces, Product } from "@/lib/store/types";
 import type { HomeModel } from "@/components/home/models";
-import { SizePicker } from "./SizePicker";
 import { BestsellerBadge } from "@/components/ui/BestsellerBadge";
+import { StoreButtons } from "@/components/ui/StoreButtons";
 
 export function ProductView({
   product,
   model,
-  shipping,
   marketplaces,
   claim,
 }: {
   claim?: string;
   product: Product;
   model: HomeModel;
-  shipping: Shipping;
   marketplaces: Marketplaces;
 }) {
-  const { add, setOpen } = useCart();
-  const available = product.variants.filter((v) => v.stock > 0);
-  const [variantId, setVariantId] = useState<string | null>(available.length === 1 ? available[0].id : null);
-  const [qty, setQty] = useState(1);
   const [img, setImg] = useState(0);
-  const [hint, setHint] = useState(false);
-  const [added, setAdded] = useState(false);
   const [showBar, setShowBar] = useState(false);
   const stage = useRef<HTMLDivElement>(null);
   const buyBox = useRef<HTMLDivElement>(null);
 
-  const variant = product.variants.find((v) => v.id === variantId) ?? null;
-  const minPrice = product.variants.length ? Math.min(...product.variants.map((v) => v.priceKurus)) : null;
-  const price = variant?.priceKurus ?? minPrice;
-  const sellable = available.length > 0;
+  const sizes = product.variants.filter((v) => v.active);
+  const price = sizes.length ? Math.min(...sizes.map((v) => v.priceKurus)) : null;
   const dark = model.fg !== "#10131D";
-  const store = model.amazon || marketplaces.amazon || marketplaces.trendyol || marketplaces.hepsiburada;
+  const amazon = model.amazon || marketplaces.amazon;
 
   useEffect(() => {
     const el = stage.current;
@@ -73,27 +61,6 @@ export function ProductView({
   function untilt() {
     gsap.to(".pv-img", { rotateY: 0, rotateX: 0, x: 0, y: 0, duration: 1.2, ease: "elastic.out(1,0.5)" });
   }
-
-  function addToCart(openDrawer = false) {
-    if (!variant) {
-      setHint(true);
-      document.getElementById("numara")?.scrollIntoView({ behavior: "smooth", block: "center" });
-      return;
-    }
-    add(variant.id, qty, openDrawer ? undefined : { title: "Sepete eklendi", body: `FormStep ${product.name} · ${variant.sizeLabel} × ${qty}`, image: product.images[0]?.src });
-    setAdded(true);
-    window.setTimeout(() => setAdded(false), 1800);
-    if (openDrawer) setOpen(true);
-  }
-
-  const shipLine =
-    shipping.feeKurus === null
-      ? "Kargo ücreti ödeme adımında gösterilir."
-      : shipping.freeThresholdKurus
-        ? `${formatPrice(shipping.freeThresholdKurus)} üzeri kargo bedava`
-        : shipping.feeKurus === 0
-          ? "Kargo bedava"
-          : `Kargo ${formatPrice(shipping.feeKurus)}`;
 
   return (
     <>
@@ -153,62 +120,50 @@ export function ProductView({
             <p className="pv-in mt-4 max-w-md leading-7" style={{ color: model.muted }}>{product.description}</p>
 
             <div ref={buyBox} className="pv-in mt-8 rounded-[1.75rem] p-6" style={{ backgroundColor: dark ? "rgba(255,255,255,0.05)" : "white", border: `1px solid ${dark ? "rgba(255,255,255,0.1)" : "#dde3ec"}` }}>
-              {sellable ? (
-                <>
-                  <div className="flex items-baseline justify-between">
-                    <p className="display text-4xl tabular-nums">{price !== null ? formatPrice(price) : ""}</p>
-                    <p className="text-sm" style={{ color: model.muted }}>KDV dahil</p>
-                  </div>
-                  <div id="numara" className="mt-6">
-                    <div className="mb-2.5 flex items-center justify-between text-sm">
-                      <span className={hint && !variant ? "font-semibold text-warn" : "font-medium"}>{hint && !variant ? "Önce numaranı seç" : "Numara"}</span>
-                      {product.sizeGuide ? <a href="#numara-rehberi" className="underline underline-offset-4" style={{ color: model.muted }}>Numara rehberi</a> : null}
-                    </div>
-                    <SizePicker variants={product.variants} value={variantId} onChange={(id) => { setVariantId(id); setHint(false); setQty(1); }} accent={model.accent} tone={dark ? "dark" : "light"} />
-                  </div>
-                  <div className="mt-6 flex gap-3">
-                    <QtyStepper value={qty} max={Math.min(10, variant?.stock ?? 10)} onChange={setQty} tone={dark ? "dark" : "light"} />
-                    <button type="button" onClick={() => addToCart()} className="btn flex-1 text-white" style={{ backgroundColor: model.accent }}>
-                      {added ? <><Check size={18} /> Eklendi</> : <><ShoppingBag size={17} /> Sepete ekle</>}
-                    </button>
-                  </div>
-                  <button type="button" onClick={() => addToCart(true)} className={`btn btn-block mt-3 ${dark ? "bg-white text-ink hover:bg-white/90" : "btn-dark"}`}>
-                    Hemen satın al
-                  </button>
-                </>
-              ) : (
-                <>
-                  <p className="text-lg font-semibold">Sitede çok yakında</p>
-                  <p className="mt-1 text-sm" style={{ color: model.muted }}>
-                    {product.name} şu an pazaryeri mağazalarımızda satışta. Sitemizde satış açıldığında numara ve fiyatlar burada olacak.
-                  </p>
-                  {store ? (
-                    <a href={store} target="_blank" rel="noopener noreferrer" className="btn btn-block mt-5 text-white" style={{ backgroundColor: model.accent }}>
-                      Pazaryerinde satın al <ArrowUpRight size={16} />
-                    </a>
-                  ) : null}
-                </>
-              )}
+              <div className="flex items-end justify-between gap-4">
+                <div>
+                  <p className="text-sm font-medium" style={{ color: model.muted }}>Fiyat</p>
+                  <p className="display mt-1 text-4xl tabular-nums">{price !== null ? formatPrice(price) : "—"}</p>
+                </div>
+                <p className="text-right text-sm" style={{ color: model.muted }}>KDV dahil</p>
+              </div>
+
+              {sizes.length ? (
+                <div id="numara" className="mt-6">
+                  <p className="mb-2.5 flex items-center gap-2 text-sm font-medium"><Ruler size={15} style={{ color: model.accent }} /> Numaralar</p>
+                  <ul className="grid grid-cols-5 gap-1.5 sm:gap-2" aria-label="Numara seçenekleri">
+                    {sizes.map((v) => (
+                      <li key={v.id} className="grid min-h-11 place-items-center rounded-xl border text-sm font-semibold tabular-nums" style={{ borderColor: dark ? "rgba(255,255,255,0.16)" : "#dde3ec" }}>
+                        {v.sizeLabel}
+                      </li>
+                    ))}
+                  </ul>
+                  <p className="mt-2 text-xs" style={{ color: model.muted }}>Ayakkabı numarana denk gelen aralığı seç.</p>
+                </div>
+              ) : null}
+
+              <p className="mt-7 text-sm font-semibold">Resmî mağazalarımızdan satın al</p>
+              <StoreButtons className="mt-3" marketplaces={marketplaces} overrides={{ amazon }} product={product.name} />
+
               <ul className="mt-6 space-y-2.5 text-sm" style={{ color: model.muted }}>
-                <li className="flex items-center gap-2.5"><Truck size={16} style={{ color: model.accent }} /> {shipLine}</li>
-                <li className="flex items-center gap-2.5"><CreditCard size={16} style={{ color: model.accent }} /> PayTR ile güvenli ödeme</li>
-                <li className="flex items-center gap-2.5"><RotateCcw size={16} style={{ color: model.accent }} /> 14 gün cayma hakkı</li>
+                <li className="flex items-center gap-2.5"><BadgeCheck size={16} style={{ color: model.accent }} /> Amazon Türkiye&apos;nin en çok satan tabanlığı</li>
+                <li className="flex items-center gap-2.5"><Store size={16} style={{ color: model.accent }} /> Satıcı: OMY Ticaret, FormStep Türkiye distribütörü</li>
               </ul>
             </div>
           </div>
         </div>
       </section>
 
-      {sellable ? (
+      {amazon ? (
         <div className={`fixed inset-x-0 bottom-0 z-40 border-t border-line bg-white/90 px-4 py-3 backdrop-blur-xl transition-transform duration-500 ease-[cubic-bezier(.16,1,.3,1)] lg:hidden ${showBar ? "translate-y-0" : "translate-y-full"}`}>
           <div className="flex items-center gap-3">
             <div className="min-w-0 flex-1">
-              <p className="truncate font-semibold">FormStep {product.name}{variant ? ` · ${variant.sizeLabel}` : ""}</p>
-              <p className="text-sm text-ink/60">{price !== null ? formatPrice(price) : ""}</p>
+              <p className="truncate font-semibold">FormStep {product.name}</p>
+              <p className="text-sm text-ink/60">{price !== null ? formatPrice(price) : model.tag}</p>
             </div>
-            <button type="button" onClick={() => addToCart()} className="btn text-white" style={{ backgroundColor: model.accent }}>
-              <ShoppingBag size={17} /> {variant ? "Sepete ekle" : "Numara seç"}
-            </button>
+            <a href={amazon} target="_blank" rel="noopener noreferrer" className="btn text-white" style={{ backgroundColor: model.accent }}>
+              Amazon&apos;da al <ArrowUpRight size={16} />
+            </a>
           </div>
         </div>
       ) : null}

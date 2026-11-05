@@ -44,7 +44,7 @@ export async function requireAdmin(role?: "owner"): Promise<AdminUser> {
   const admin = await getAdmin();
   if (!admin) {
     const user = await getUser();
-    redirect(user ? "/" : `/giris?next=${adm()}`);
+    redirect(user ? "/" : adm("/giris"));
   }
   if (role === "owner" && admin.role !== "owner") redirect(adm());
   return admin;

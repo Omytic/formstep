@@ -44,6 +44,17 @@ describe("yasal metinler", () => {
     expect(sellerComplete(seller)).toBe(false);
     expect(sellerComplete({ ...seller, address: "Ataköy", phone: "+90 553 588 69 36", email: "info@omytic.com" })).toBe(true);
   });
+  it("satış kapalıyken metinler pazaryeri satışına göre yazılır; PayTR ve kargo sayfası yok", () => {
+    const ship = { feeKurus: null, freeThresholdKurus: null, carrier: "", leadTimeText: "" };
+    const full = { ...seller, address: "Ataköy", phone: "+90 553 588 69 36", email: "info@omytic.com" };
+    for (const slug of ["on-bilgilendirme", "mesafeli-satis", "kvkk", "cerez-politikasi", "kullanim-kosullari", "iade-ve-cayma"]) {
+      const text = JSON.stringify(legalDoc(slug, full, ship));
+      expect(text, slug).not.toContain("PayTR");
+      expect(text, slug).not.toContain("yönetim panelinden girilecek");
+    }
+    expect(JSON.stringify(legalDoc("on-bilgilendirme", full, ship))).toContain("bu site üzerinden sipariş alınmaz");
+    expect(legalDoc("teslimat", full, ship)).toBeNull();
+  });
   it("bilinmeyen sayfa için null döner", () => {
     expect(legalDoc("yok", seller, { feeKurus: 0, freeThresholdKurus: null, carrier: "", leadTimeText: "" })).toBeNull();
   });

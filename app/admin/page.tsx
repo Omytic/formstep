@@ -7,10 +7,95 @@ import { requireAdmin } from "@/lib/auth";
 import { launchGates } from "@/lib/launch";
 import { formatPrice } from "@/lib/money";
 import { formatDate } from "@/lib/orders";
+import { supabaseConfigured } from "@/lib/env";
+import { SALES_ENABLED } from "@/lib/features";
+import { sellerComplete } from "@/lib/legal";
 import { getCatalogForAdmin, getSettings } from "@/lib/store/catalog";
 
 export default async function AdminHome() {
   await requireAdmin();
+  if (!SALES_ENABLED) return <SiteHome />;
+  return <SalesHome />;
+}
+
+/** Satış kapalıyken: sitenin içerik ve stok durumu. */
+async function SiteHome() {
+  const [catalog, settings] = await Promise.all([getCatalogForAdmin(), getSettings()]);
+  const m = settings.marketplaces;
+  const checks = [
+    { label: "Veritabanı bağlı", ok: supabaseConfigured(), how: "Supabase anahtarları Vercel ortam değişkenlerinde olmalı" },
+    { label: "Üç model yayında", ok: catalog.every((p) => p.status === "published"), how: "Ürünler sayfasından durumunu Yayında yap", href: adm("/urunler") },
+    { label: "Pazaryeri bağlantıları", ok: Boolean(m.amazon && m.trendyol && m.hepsiburada), how: "İçerik sayfasından Amazon, Trendyol, Hepsiburada adresleri", href: adm("/icerik") },
+    { label: "Satıcı bilgileri", ok: sellerComplete(settings.seller), how: "Adres, telefon ve e-posta", href: adm("/ayarlar") },
+  ];
+  return (
+    <div className="fs-enter space-y-8">
+      <div>
+        <h1 className="display text-4xl">Özet</h1>
+        <p className="mt-1 text-ink/55">formstep.tr tanıtım sitesi. Satışlar pazaryeri mağazalarında.</p>
+      </div>
+
+      <div className="grid gap-4 md:grid-cols-3">
+        {catalog.map((p) => {
+          const total = p.variants.reduce((a, v) => a + v.stock, 0);
+          const price = p.variants.length ? Math.min(...p.variants.map((v) => v.priceKurus)) : null;
+          return (
+            <Link key={p.code} href={adm(`/urunler/${p.code}`)} className="card group p-6 transition hover:-translate-y-0.5">
+              <div className="flex items-center justify-between">
+                <p className="display text-3xl">{p.name}</p>
+                <span className={`chip ${p.status === "published" ? "bg-good/10 text-good" : "bg-warn/10 text-warn"}`}>{p.status === "published" ? "Yayında" : p.status === "draft" ? "Taslak" : "Arşiv"}</span>
+              </div>
+              <p className="mt-1 text-sm text-ink/55">{p.tagline}</p>
+              <dl className="mt-5 grid grid-cols-3 gap-2 text-sm">
+                <div><dt className="text-ink/50">Fiyat</dt><dd className="font-semibold tabular-nums">{price !== null ? formatPrice(price) : "—"}</dd></div>
+                <div><dt className="text-ink/50">Numara</dt><dd className="font-semibold tabular-nums">{p.variants.length}</dd></div>
+                <div><dt className="text-ink/50">Stok</dt><dd className="font-semibold tabular-nums">{total}</dd></div>
+              </dl>
+              <p className="mt-5 flex items-center gap-1 text-sm text-blue">Düzenle <ArrowRight size={14} className="transition-transform group-hover:translate-x-1" /></p>
+            </Link>
+          );
+        })}
+      </div>
+
+      <div className="grid gap-6 lg:grid-cols-2">
+        <div className="card p-6">
+          <h2 className="text-lg font-semibold">Site kontrol listesi</h2>
+          <ul className="mt-4 space-y-3">
+            {checks.map((g) => (
+              <li key={g.label} className="flex items-start gap-3 rounded-2xl bg-paper p-4">
+                {g.ok ? <CheckCircle2 size={20} className="mt-0.5 shrink-0 text-good" /> : <Circle size={20} className="mt-0.5 shrink-0 text-ink/25" />}
+                <div className="text-sm">
+                  <p className="font-semibold">{g.label}</p>
+                  {!g.ok ? <p className="text-ink/55">{g.how}{g.href ? <> · <Link href={g.href} className="text-blue hover:underline">Düzenle</Link></> : null}</p> : null}
+                </div>
+              </li>
+            ))}
+          </ul>
+        </div>
+        <div className="card p-6">
+          <h2 className="text-lg font-semibold">Hızlı erişim</h2>
+          <ul className="mt-4 grid gap-3 sm:grid-cols-2">
+            {[
+              { href: adm("/stok"), t: "Stok", d: "Numara numara stok gir" },
+              { href: adm("/urunler"), t: "Ürünler", d: "Açıklama, özellik, görsel, fiyat" },
+              { href: adm("/icerik"), t: "İçerik", d: "Duyuru, SSS, pazaryeri linkleri, yasal metinler" },
+              { href: adm("/ayarlar"), t: "Ayarlar", d: "Satıcı ve iletişim bilgileri" },
+            ].map((q) => (
+              <li key={q.href}>
+                <Link href={q.href} className="group block rounded-2xl bg-paper p-4 transition hover:bg-ice">
+                  <p className="flex items-center gap-1 font-semibold">{q.t} <ArrowRight size={14} className="transition-transform group-hover:translate-x-1" /></p>
+                  <p className="mt-0.5 text-sm text-ink/55">{q.d}</p>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+async function SalesHome() {
   const [d, catalog, settings, raw] = await Promise.all([getDashboard(), getCatalogForAdmin(), getSettings(), getSettingsRaw()]);
   const gates = launchGates({ catalog, settings, raw });
   const done = gates.filter((g) => g.ok).length;

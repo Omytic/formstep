@@ -1,5 +1,6 @@
 "use server";
 
+import { SALES_ENABLED } from "@/lib/features";
 import { headers } from "next/headers";
 import { getUser } from "@/lib/auth";
 import { isPreview, paytrConfigured, paytrTestMode, siteUrl, supabaseConfigured } from "@/lib/env";
@@ -36,6 +37,7 @@ async function paymentsOpen(): Promise<boolean> {
 }
 
 export async function startCheckout(input: CheckoutInput): Promise<CheckoutResult> {
+  if (!SALES_ENABLED) return { ok: false, message: "FormStep'i Amazon, Trendyol ve Hepsiburada mağazalarımızdan satın alabilirsin." };
   const parsed = checkoutSchema.safeParse(input);
   if (!parsed.success) {
     const fieldErrors: Record<string, string> = {};

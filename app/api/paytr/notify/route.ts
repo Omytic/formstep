@@ -1,6 +1,7 @@
 import { after } from "next/server";
 import { flushOutbox } from "@/lib/email";
 import { supabaseConfigured } from "@/lib/env";
+import { SALES_ENABLED } from "@/lib/features";
 import { paytrCallbackToken, parseCallback, safeEqual } from "@/lib/paytr/hash";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 
@@ -20,6 +21,7 @@ export function GET() {
  * güvenlik, imza doğrulamasıyla sağlanır. Sipariş yalnızca burada "ödendi" olur.
  */
 export async function POST(req: Request) {
+  if (!SALES_ENABLED) return text("Not Found", 404);
   const key = process.env.PAYTR_MERCHANT_KEY?.trim();
   const salt = process.env.PAYTR_MERCHANT_SALT?.trim();
   if (!key || !salt || !supabaseConfigured()) return text("ERROR", 500);

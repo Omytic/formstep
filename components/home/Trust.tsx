@@ -1,29 +1,16 @@
-import { ArrowUpRight, CreditCard, RotateCcw, Truck } from "lucide-react";
+import { BadgeCheck, RotateCcw, Store } from "lucide-react";
 import { SocialRow } from "@/components/layout/SocialRow";
-import { formatPrice } from "@/lib/money";
+import { StoreButtons } from "@/components/ui/StoreButtons";
 import type { StoreSettings } from "@/lib/store/types";
 
 export function Trust({ settings }: { settings: StoreSettings }) {
-  const { shipping, marketplaces: m, claims } = settings;
+  const { marketplaces: m, claims } = settings;
   const claim = claims.find((c) => c.active);
-  const stores = [
-    { href: m.amazon, label: "Amazon" },
-    { href: m.trendyol, label: "Trendyol" },
-    { href: m.hepsiburada, label: "Hepsiburada" },
-  ];
-  const shipText =
-    shipping.feeKurus === null
-      ? "Siparişin özenle paketlenip kargoya verilir."
-      : shipping.freeThresholdKurus
-        ? `${formatPrice(shipping.freeThresholdKurus)} ve üzeri siparişlerde kargo bedava.`
-        : shipping.feeKurus === 0
-          ? "Tüm siparişlerde kargo bedava."
-          : `Kargo ücreti ${formatPrice(shipping.feeKurus)}.`;
 
   const items = [
-    { icon: CreditCard, title: "Güvenli ödeme", body: "Kartınla PayTR güvencesiyle öde. Kart bilgilerin bizde saklanmaz." },
-    { icon: Truck, title: shipping.leadTimeText ? `${shipping.leadTimeText} kargoda` : "Kargo", body: shipText },
-    { icon: RotateCcw, title: "14 gün cayma hakkı", body: "Teslimden itibaren 14 gün içinde cayma hakkını kullanabilirsin." },
+    { icon: BadgeCheck, title: "Amazon'da en çok satan", body: "FormStep, Amazon Türkiye'de kendi kategorisinin en çok satan tabanlıkları arasında." },
+    { icon: Store, title: "Resmî mağazalar", body: "Amazon, Trendyol ve Hepsiburada'da satıcı OMY Ticaret: FormStep'in Türkiye distribütörü." },
+    { icon: RotateCcw, title: "Kolay iade", body: "İade ve cayma hakkını, satın aldığın mağazanın iade süreciyle kolayca kullanırsın." },
   ];
 
   return (
@@ -44,24 +31,16 @@ export function Trust({ settings }: { settings: StoreSettings }) {
             </h2>
             {claim ? (
               <p className="mt-4 text-sm text-mist/70" data-reveal>
-                <a href={claim.evidenceUrl} target="_blank" rel="noopener noreferrer" className="underline underline-offset-4">Amazon&apos;daki ürün sayfamızı gör</a> · yaklaşık iki yıldır Amazon, Trendyol ve Hepsiburada&apos;da satışta
+                <a href={claim.evidenceUrl} target="_blank" rel="noopener noreferrer" className="underline underline-offset-4">Amazon&apos;daki ürün sayfamızı gör</a> · iki yılı aşkın süredir Amazon, Trendyol ve Hepsiburada&apos;da
               </p>
             ) : (
               <p className="mt-6 max-w-md text-lg leading-8 text-mist" data-reveal>
-                FormStep yaklaşık iki yıldır Amazon, Trendyol ve Hepsiburada&apos;da satışta. Şimdi kendi mağazamızda.
+                FormStep iki yılı aşkın süredir Amazon, Trendyol ve Hepsiburada&apos;da.
               </p>
             )}
-            <div className="mt-10 flex flex-wrap items-center gap-3" data-reveal>
-              <SocialRow instagram={m.instagram} x={m.x} />
-              {stores.map((s) =>
-                s.href ? (
-                  <a key={s.label} href={s.href} target="_blank" rel="noopener noreferrer" className="btn btn-quiet">
-                    {s.label} <ArrowUpRight size={15} />
-                  </a>
-                ) : (
-                  <span key={s.label} className="chip border border-white/15 text-mist">{s.label}</span>
-                ),
-              )}
+            <div className="mt-10 max-w-md" data-reveal>
+              <StoreButtons marketplaces={m} />
+              <SocialRow instagram={m.instagram} x={m.x} className="mt-5" />
             </div>
           </div>
           <ul className="grid gap-4 lg:col-span-6" data-reveal-stagger>

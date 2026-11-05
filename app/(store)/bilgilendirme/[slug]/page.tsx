@@ -3,7 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { supabaseConfigured } from "@/lib/env";
 import { Emphasis, LegalParagraph } from "@/components/legal/LegalParagraph";
-import { LEGAL_NAV, legalDoc } from "@/lib/legal";
+import { LEGAL_NAV, LEGAL_UPDATED, legalDoc } from "@/lib/legal";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { getSettings } from "@/lib/store/catalog";
 
@@ -38,6 +38,9 @@ export default async function LegalPage({ params }: Props) {
           <p className="kicker text-sky">Bilgilendirme</p>
           <h1 className="display mt-4 text-5xl md:text-7xl">{custom?.title ?? doc.title}</h1>
           {!custom ? <p className="mt-5 max-w-2xl text-lg leading-8 text-mist">{doc.intro}</p> : null}
+          {slug !== "hakkimizda" && slug !== "iletisim" ? (
+            <p className="mt-6 text-sm text-mist/70">Son güncelleme: {custom ? new Date(custom.updated_at).toLocaleDateString("tr-TR", { day: "numeric", month: "long", year: "numeric" }) : LEGAL_UPDATED}</p>
+          ) : null}
         </div>
       </div>
       <div className="mx-auto grid max-w-5xl gap-10 px-5 pt-12 lg:grid-cols-12">
