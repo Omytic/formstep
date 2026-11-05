@@ -1,0 +1,557 @@
+@import "tailwindcss";
+
+/* Fontlar sitede barındırılır (SIL Open Font License). */
+@font-face {
+  font-family: "Manrope";
+  font-style: normal;
+  font-display: swap;
+  font-weight: 200 800;
+  src: url("/fonts/manrope-latin-wght-normal.woff2") format("woff2");
+  unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
+}
+@font-face {
+  font-family: "Archivo";
+  font-style: normal;
+  font-display: swap;
+  font-weight: 800;
+  src: url("/fonts/archivo-latin-800-normal.woff2") format("woff2");
+  unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
+}
+@font-face {
+  font-family: "Archivo";
+  font-style: normal;
+  font-display: swap;
+  font-weight: 900;
+  src: url("/fonts/archivo-latin-900-normal.woff2") format("woff2");
+  unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
+}
+@font-face {
+  font-family: "Manrope";
+  font-style: normal;
+  font-display: swap;
+  font-weight: 200 800;
+  src: url("/fonts/manrope-latin-ext-wght-normal.woff2") format("woff2");
+  unicode-range: U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF;
+}
+@font-face {
+  font-family: "Archivo";
+  font-style: normal;
+  font-display: swap;
+  font-weight: 800;
+  src: url("/fonts/archivo-latin-ext-800-normal.woff2") format("woff2");
+  unicode-range: U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF;
+}
+@font-face {
+  font-family: "Archivo";
+  font-style: normal;
+  font-display: swap;
+  font-weight: 900;
+  src: url("/fonts/archivo-latin-ext-900-normal.woff2") format("woff2");
+  unicode-range: U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF;
+}
+
+@theme inline {
+  --color-night: #060a16;
+  --color-navy: #0e1a36;
+  --color-blue: #2477ea;
+  --color-royal: #0873e5;
+  --color-sky: #4ea1e1;
+  --color-paper: #f6f8fc;
+  --color-ink: #10131d;
+  --color-ice: #e7edf5;
+  --color-mist: #b9c8dc;
+  --color-line: #dde3ec;
+  --color-good: #16a34a;
+  --color-warn: #d97706;
+  --color-bad: #dc2626;
+  --font-sans: "Manrope", system-ui, sans-serif;
+  --font-display: "Archivo", "Helvetica Neue", Arial, sans-serif;
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  background: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  text-rendering: optimizeLegibility;
+}
+
+::selection {
+  background: var(--color-blue);
+  color: white;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-blue);
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+
+@layer components {
+/* ───────── tipografi ───────── */
+
+.display {
+  font-family: var(--font-display);
+  font-weight: 800;
+  letter-spacing: -0.035em;
+  line-height: 0.92;
+}
+
+.kicker {
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+.prose-fs p {
+  line-height: 1.8;
+  color: color-mix(in srgb, var(--color-ink) 72%, transparent);
+}
+
+/* ───────── butonlar ───────── */
+
+.btn {
+  position: relative;
+  display: inline-flex;
+  min-height: 48px;
+  align-items: center;
+  justify-content: center;
+  gap: 0.55rem;
+  padding: 0 1.4rem;
+  border-radius: 999px;
+  font-size: 0.95rem;
+  font-weight: 650;
+  isolation: isolate;
+  overflow: hidden;
+  transition:
+    transform 0.35s var(--ease-out-expo),
+    background-color 0.25s,
+    color 0.25s,
+    border-color 0.25s,
+    box-shadow 0.35s;
+  will-change: transform;
+}
+.btn:active {
+  transform: scale(0.97);
+}
+.btn:disabled,
+.btn[aria-disabled="true"] {
+  opacity: 0.45;
+  pointer-events: none;
+}
+.btn-primary {
+  background: var(--color-blue);
+  color: white;
+  box-shadow: 0 10px 30px -10px rgba(36, 119, 234, 0.7);
+}
+.btn-primary::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(110deg, transparent 30%, rgba(255, 255, 255, 0.35) 50%, transparent 70%);
+  transform: translateX(-120%);
+  transition: transform 0.8s var(--ease-out-expo);
+}
+.btn-primary:hover::before {
+  transform: translateX(120%);
+}
+.btn-primary:hover {
+  background: #1d6ad8;
+  box-shadow: 0 16px 40px -12px rgba(36, 119, 234, 0.85);
+}
+.btn-dark {
+  background: var(--color-ink);
+  color: white;
+}
+.btn-dark:hover {
+  background: #232838;
+}
+.btn-quiet {
+  border: 1px solid rgba(246, 248, 252, 0.3);
+  color: var(--color-paper);
+  backdrop-filter: blur(8px);
+}
+.btn-quiet:hover {
+  border-color: rgba(246, 248, 252, 0.7);
+  background: rgba(255, 255, 255, 0.06);
+}
+.btn-ghost {
+  border: 1px solid var(--color-line);
+  color: var(--color-ink);
+  background: white;
+}
+.btn-ghost:hover {
+  border-color: color-mix(in srgb, var(--color-ink) 40%, transparent);
+}
+.btn-sm {
+  min-height: 38px;
+  padding: 0 1rem;
+  font-size: 0.85rem;
+}
+.btn-block {
+  width: 100%;
+}
+
+/* ───────── form alanları ───────── */
+
+.field {
+  width: 100%;
+  min-height: 52px;
+  border: 1.5px solid var(--color-line);
+  background: white;
+  border-radius: 14px;
+  padding: 0.85rem 1rem;
+  font-size: 1rem;
+  transition:
+    border-color 0.2s,
+    box-shadow 0.2s;
+}
+.field:hover {
+  border-color: #c4ccd8;
+}
+.field:focus {
+  outline: none;
+  border-color: var(--color-blue);
+  box-shadow: 0 0 0 4px rgba(36, 119, 234, 0.14);
+}
+.field[aria-invalid="true"] {
+  border-color: var(--color-bad);
+  box-shadow: 0 0 0 4px rgba(220, 38, 38, 0.1);
+}
+.field:disabled {
+  background: #eef2f7;
+  color: #5c6573;
+}
+textarea.field {
+  min-height: 110px;
+  resize: vertical;
+}
+select.field {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' fill='none'%3E%3Cpath d='M1 1.5l5 5 5-5' stroke='%2310131d' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 1rem center;
+  padding-right: 2.5rem;
+}
+.label {
+  display: block;
+  margin-bottom: 0.4rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+.field-error {
+  margin-top: 0.35rem;
+  font-size: 0.8rem;
+  color: var(--color-bad);
+}
+
+.check {
+  appearance: none;
+  flex: none;
+  width: 22px;
+  height: 22px;
+  border: 1.5px solid #b8c1ce;
+  border-radius: 7px;
+  background: white;
+  display: grid;
+  place-items: center;
+  transition: all 0.2s;
+}
+.check:checked {
+  background: var(--color-blue);
+  border-color: var(--color-blue);
+}
+.check:checked::after {
+  content: "";
+  width: 6px;
+  height: 11px;
+  border: solid white;
+  border-width: 0 2.5px 2.5px 0;
+  transform: rotate(45deg) translate(-1px, -1px);
+}
+
+/* ───────── yüzeyler ───────── */
+
+.card {
+  background: white;
+  border: 1px solid var(--color-line);
+  border-radius: 24px;
+}
+
+.chip {
+  display: inline-flex;
+  min-height: 30px;
+  align-items: center;
+  gap: 0.35rem;
+  border-radius: 999px;
+  padding: 0 0.8rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.glass {
+  background: rgba(8, 13, 28, 0.82);
+  backdrop-filter: blur(18px) saturate(140%);
+  -webkit-backdrop-filter: blur(18px) saturate(140%);
+}
+
+}
+
+/* İnce film greni */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  pointer-events: none;
+  opacity: 0.04;
+  background-image: url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* ───────── hareket ───────── */
+
+@keyframes fs-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-14px);
+  }
+}
+.fs-float {
+  animation: fs-float 6s ease-in-out infinite;
+}
+
+@keyframes fs-bob {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(4px);
+  }
+}
+.fs-bob {
+  display: inline-block;
+  animation: fs-bob 1.6s ease-in-out infinite;
+}
+
+@keyframes fs-marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+.fs-marquee {
+  animation: fs-marquee 42s linear infinite;
+}
+.fs-marquee-reverse {
+  animation: fs-marquee 52s linear infinite reverse;
+}
+
+@keyframes fs-pop {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.fs-pop {
+  animation: fs-pop 0.55s var(--ease-out-expo) both;
+}
+
+@keyframes fs-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.fs-enter > * {
+  animation: fs-fade-up 0.8s var(--ease-out-expo) both;
+}
+.fs-enter > *:nth-child(2) {
+  animation-delay: 0.06s;
+}
+.fs-enter > *:nth-child(3) {
+  animation-delay: 0.12s;
+}
+.fs-enter > *:nth-child(4) {
+  animation-delay: 0.18s;
+}
+.fs-enter > *:nth-child(5) {
+  animation-delay: 0.24s;
+}
+.fs-enter > *:nth-child(6) {
+  animation-delay: 0.3s;
+}
+
+@keyframes fs-shimmer {
+  from {
+    background-position: -200% 0;
+  }
+  to {
+    background-position: 200% 0;
+  }
+}
+.skeleton {
+  background: linear-gradient(90deg, #eef2f7 25%, #e2e8f0 50%, #eef2f7 75%);
+  background-size: 200% 100%;
+  animation: fs-shimmer 1.4s linear infinite;
+  border-radius: 12px;
+}
+
+@keyframes fs-lift {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+@keyframes fs-drop {
+  0%,
+  100% {
+    transform: translateY(-6px);
+  }
+  50% {
+    transform: translateY(0);
+  }
+}
+@keyframes fs-spark {
+  0%,
+  100% {
+    opacity: 0.2;
+    transform: scale(0.7);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.15);
+  }
+}
+.fs-lift {
+  animation: fs-lift 2.4s ease-in-out infinite;
+}
+.fs-drop {
+  animation: fs-drop 2.4s ease-in-out infinite;
+}
+.fs-spark {
+  animation: fs-spark 1.8s ease-in-out infinite;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+@keyframes fs-pulse-ring {
+  from {
+    transform: scale(0.8);
+    opacity: 0.7;
+  }
+  to {
+    transform: scale(2.2);
+    opacity: 0;
+  }
+}
+.fs-pulse-ring {
+  animation: fs-pulse-ring 2s var(--ease-out-expo) infinite;
+}
+
+@keyframes fs-drawer-in {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: none;
+  }
+}
+@keyframes fs-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+.fs-drawer {
+  animation: fs-drawer-in 0.55s var(--ease-out-expo) both;
+}
+.fs-backdrop {
+  animation: fs-fade-in 0.3s ease both;
+}
+
+@keyframes fs-check-draw {
+  from {
+    stroke-dashoffset: 48;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+.fs-check-draw {
+  stroke-dasharray: 48;
+  animation: fs-check-draw 0.7s 0.25s var(--ease-out-expo) both;
+}
+
+/* Kart üzerinde fareyi izleyen ışık */
+.spotlight {
+  --mx: 50%;
+  --my: 50%;
+}
+.spotlight::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background: radial-gradient(420px circle at var(--mx) var(--my), rgba(255, 255, 255, 0.16), transparent 45%);
+  opacity: 0;
+  transition: opacity 0.35s;
+}
+.spotlight:hover::after {
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Rozet üzerinde ara sıra geçen ışık */
+.fs-badge::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(105deg, transparent 35%, rgba(255, 255, 255, 0.45) 50%, transparent 65%);
+  transform: translateX(-120%);
+  animation: fs-badge-shine 5s ease-in-out 1.5s infinite;
+}
+@keyframes fs-badge-shine {
+  0%, 70% { transform: translateX(-120%); }
+  85%, 100% { transform: translateX(120%); }
+}

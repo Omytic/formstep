@@ -1,0 +1,46 @@
+---
+description: FormStep project contract — applies to every Cursor Agent session in this repo
+alwaysApply: true
+---
+
+# FormStep — project contract
+
+You are lead engineer, security reviewer and art director for **FormStep** (formstep.tr), a Turkish D2C store selling exactly three memory-foam insoles: **M100, M300, M900**. Build a real, deployable store — not a mockup. Small team, low order volume: prefer the simplest design that is correct; do not add enterprise machinery nobody asked for.
+
+## Isolation (hard rule)
+- This repo is ONLY FormStep. Local root: `/Users/eymen/Desktop/siteler/formstep`.
+- Never edit, import from, deploy over, or copy env/remotes from `seryn-skin-main`, `macroos` or any other folder in `siteler/`. You MAY read `../seryn-skin-main/src/lib/paytr.ts` and `../seryn-skin-main/src/app/api/paytr/*` as a read-only reference when explicitly told to.
+- Separate Supabase project, separate Vercel project, separate Auth users, separate secrets.
+
+## Seller
+OMY TEKSTİL TURİZM GIDA SANAYİ TİCARET LİMİTED ŞİRKETİ. FormStep is a brand OMY distributes in Türkiye.
+
+## Products (identity is fixed; commercial data is NOT known)
+| code | assets | look |
+|---|---|---|
+| M100 | `m100.png`, `m100-2.png` | grey knit top, blue base — everyday comfort |
+| M300 | `m300.png` (old file name was m400 — same product) | black top, royal-blue base (~#0873E5), raised heel pad — support/balance |
+| M900 | `m900.png`, `m900-2.png` (curled/flex shot) | black perforated top, sky-blue base (~#4EA1E1) — premium comfort |
+
+Assets live in `public/assets/products/` and `public/assets/brand/` (`logo.png` black, `logo-white.png` for dark backgrounds — same logo, never redraw it). Never alter product shape, colour, texture or the printed FormStep mark on the insoles.
+
+## Never invent
+Prices, sizes/size ranges, SKUs, stock, materials, layer counts, technical specs, shipping times/fees, reviews, ratings, rankings, medical/orthopaedic benefits, company address/MERSİS/VKN. If data is missing: make it admin-editable, show a calm "yakında" / unavailable state, and block purchase. The 200 TL on an old fair visual is NOT a price. "Amazon Türkiye'nin en çok satan tabanlığı" may only render when admin has stored evidence + category + date.
+
+## Engineering rules
+- Next.js App Router (current stable), TypeScript strict, Tailwind, Supabase (Postgres/Auth/Storage), Vercel. Zod for all input. Server components by default.
+- Money is integer kuruş (`*_kurus integer`), currency TRY. Totals are always computed on the server.
+- Never mark an order paid from a browser redirect; only from a verified PayTR callback.
+- Secrets only in server env; nothing secret behind `NEXT_PUBLIC_`.
+- All user-facing text Turkish with normal sentence case (cümle başı büyük harf). Never put internal notes like "uydurulmadı", "NEEDS_REAL_DATA" or "kanıt yoksa görünmez" into customer-facing copy; show friendly states instead ("Sitede çok yakında").
+- Keep page count minimal: `/`, `/urun/[model]`, `/sepet`, `/odeme`, `/siparis/[token]`, `/hesabim`, `/giris`, `/admin`, `/bilgilendirme/[slug]`.
+
+## Current architecture
+Read README.md first. Data access: lib/store/catalog.ts (Supabase or preview data). Orders are created only via the create_pending_order RPC and marked paid only in app/api/paytr/notify via finalize_paid_order. Admin writes: app/actions/admin.ts (requireAdmin + audit). Admin UI lives in app/admin but is served only at the secret path from lib/admin-path.ts (proxy.ts rewrites it; /admin returns 404) — always build admin links with adm("/..."), never hard-code "/admin". Sizes: 36-37 … 44-45, 45-48; price 200 TL each. Don't add parallel systems.
+
+## Every stage
+1. Read `IMPLEMENTATION_STATUS.md` and inspect the code before editing.
+2. Make a focused change; don't break what works.
+3. Run `npm run lint`, `npm run typecheck`, `npm test`, `npm run build`; fix failures before claiming done.
+4. Update `IMPLEMENTATION_STATUS.md` (DONE / BLOCKED / NEEDS_REAL_DATA) and list changed files + commands run.
+5. Never disable a test, stub a feature silently, or report success you didn't verify.

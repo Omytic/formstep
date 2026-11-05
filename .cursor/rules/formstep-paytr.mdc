@@ -1,0 +1,17 @@
+---
+description: PayTR iFrame API facts for FormStep — apply when touching payment code
+globs: ["src/lib/paytr/**", "src/app/api/paytr/**", "src/app/(store)/odeme/**", "supabase/migrations/**"]
+alwaysApply: false
+---
+
+# PayTR facts (verified from SERYN's working integration + dev.paytr.com)
+
+- Endpoints: token `POST https://www.paytr.com/odeme/api/get-token`; iframe `https://www.paytr.com/odeme/guvenli/{token}`.
+- Token hash: `base64(HMAC-SHA256(key=merchant_key, merchant_id + user_ip + merchant_oid + email + payment_amount + user_basket + no_installment + max_installment + currency + test_mode + merchant_salt))`.
+- Callback hash: `base64(HMAC-SHA256(key=merchant_key, merchant_oid + merchant_salt + status + total_amount))`. Compare with `timingSafeEqual`.
+- `payment_amount` / `total_amount` are kuruş strings. `user_basket` is base64(JSON [[name, unitPriceTL, qty], ...]).
+- `merchant_oid`: alphanumeric only, max 64. FormStep prefix: `FST`.
+- Callback must reply plain text `OK`. PayTR retries if it doesn't get OK → duplicates are normal; dedupe on merchant_oid.
+- Callback route: POST only, `runtime = "nodejs"`, no auth/session/CSRF, form-encoded body.
+- **The Bildirim (callback) URL is ONE setting per PayTR mağaza** (Mağaza Paneli › Destek & Kurulum › Ayarlar). If FormStep reused SERYN's merchant ID, FormStep callbacks would hit seryn.com.tr — SERYN's handler answers OK to unknown oids, so FormStep orders would silently never be marked paid. FormStep must use its OWN PayTR mağaza (own merchant_id/key/salt). Do not implement a shared-merchant workaround and never touch SERYN's handler.
+- SERYN's reference implementation (`../seryn-skin-main/src/lib/paytr.ts`) is correct for hashing; do NOT copy its non-atomic stock/coupon updates — FormStep finalises payment in a single DB transaction (RPC).
