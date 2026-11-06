@@ -28,15 +28,15 @@ export async function requireUser(next = "/hesabim"): Promise<SessionUser> {
   return user;
 }
 
-export type AdminUser = SessionUser & { role: "owner" | "staff" };
+export type AdminUser = SessionUser & { role: "owner" | "staff"; name: string };
 
 export async function getAdmin(): Promise<AdminUser | null> {
-  if (isPreview()) return { ...PREVIEW_USER, role: "owner" };
+  if (isPreview()) return { ...PREVIEW_USER, role: "owner", name: "Önizleme" };
   const user = await getUser();
   if (!user) return null;
-  const { data } = await supabaseAdmin().from("admins").select("role").eq("user_id", user.id).maybeSingle();
+  const { data } = await supabaseAdmin().from("admins").select("*").eq("user_id", user.id).maybeSingle();
   if (!data) return null;
-  return { ...user, role: data.role };
+  return { ...user, role: data.role, name: data.display_name || user.fullName || user.email.split("@")[0] };
 }
 
 /** Her yönetim sayfası, eylemi ve rotası bunu sunucuda çağırır. */

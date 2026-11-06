@@ -31,21 +31,27 @@ const personName = z
     return parts.length >= 2 && parts.every((part) => part.length >= 2);
   });
 const password = z.string().min(8).max(72);
-/** Yönetici, giriş alanına e-posta yerine bu adı yazar. */
-const ADMIN_LOGIN = "admin";
-const ADMIN_EMAIL = "admin@formstep.tr";
+/**
+ * Ekip giriş alanına e-posta yerine kullanıcı adını yazar: "ömer" → omer@formstep.tr.
+ * Hesaplar scripts/create-team.mjs ile bu biçimde açılır.
+ */
+export async function usernameToEmail(raw: string): Promise<string> {
+  const map: Record<string, string> = { ç: "c", ğ: "g", ı: "i", i̇: "i", ö: "o", ş: "s", ü: "u" };
+  const user = raw.trim().toLocaleLowerCase("tr-TR").replace(/[çğıöşü]|i̇/g, (c) => map[c] ?? c).replace(/[^a-z0-9._-]/g, "");
+  return `${user}@formstep.tr`;
+}
 
-function signInEmail(raw: unknown): string | null {
-  const value = String(raw ?? "").trim().toLowerCase();
-  if (value === ADMIN_LOGIN) return ADMIN_EMAIL;
-  const parsed = email.safeParse(value);
+async function signInEmail(raw: unknown): Promise<string | null> {
+  const value = String(raw ?? "").trim();
+  const candidate = value.includes("@") ? value.toLowerCase() : value.length >= 2 ? await usernameToEmail(value) : "";
+  const parsed = email.safeParse(candidate);
   return parsed.success ? parsed.data : null;
 }
 
 export async function signIn(_: AuthState, form: FormData): Promise<AuthState> {
   if (!supabaseConfigured()) return NOT_READY;
   if (await limited("signin")) return { ok: false, message: "Çok fazla deneme. Birkaç dakika sonra tekrar dene." };
-  const emailValue = signInEmail(form.get("email"));
+  const emailValue = await signInEmail(form.get("email"));
   const parsed = z.object({ email, password: z.string().min(1) }).safeParse({ email: emailValue, password: form.get("password") });
   if (!parsed.success) return { ok: false, message: "E-posta ve şifreni kontrol et." };
   const supabase = await supabaseServer();

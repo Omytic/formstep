@@ -6,8 +6,17 @@ müşteri üyeliği kapalı; kodları duruyor ve `lib/features.ts` içindeki iki
 ## 1. Supabase
 1. Yeni migration'ları uygula (proje zaten bağlı): `npx supabase db push`
    - `…0900_showcase_mode.sql`: modelleri yayına alır, M100/M300/M900 açıklamalarını günceller, kargo SSS'sini kaldırır.
+   - `…1000_operations.sql`: operasyon paneli tabloları (stok, sevkiyat, satış, aldı-verdi, reklam, sosyal medya, görevler).
 2. Authentication → URL Configuration → Site URL: `https://formstep.tr`
-3. Yönetici hesabı. Giriş ekranında kullanıcı adı **admin** yazılır; arka planda `admin@formstep.tr` hesabına girer.
+3. Ekip hesapları (Yunus, Yusuf, Ömer). Cursor terminalinde bir kez çalıştır; şifreyi kendin yaz, hiçbir dosyaya kaydedilmez:
+
+   ```bash
+   node --env-file=.env.local scripts/create-team.mjs 'ŞİFRE'
+   ```
+
+   Girişte kullanıcı adı olarak `yunus`, `yusuf` ya da `ömer` yazılır. Herkes ilk girişten sonra Hesabım sayfasından şifresini değiştirmeli.
+   Aynı komut tekrar çalıştırılırsa üç hesabın şifresini sıfırlar.
+4. Eski tek yönetici hesabı. Giriş ekranında kullanıcı adı **admin** yazılır; arka planda `admin@formstep.tr` hesabına girer.
    Hesap henüz yoksa Cursor terminalinde bir kez çalıştır (şifreyi kendin yaz, hiçbir dosyaya kaydetme):
 
    ```bash
@@ -25,7 +34,6 @@ müşteri üyeliği kapalı; kodları duruyor ve `lib/features.ts` içindeki iki
 | NEXT_PUBLIC_SITE_URL | `https://formstep.tr` |
 | NEXT_PUBLIC_SUPABASE_URL / NEXT_PUBLIC_SUPABASE_ANON_KEY | Supabase → Settings → API |
 | SUPABASE_SERVICE_ROLE_KEY | Gizli; asla tarayıcıya gitmez |
-| NEXT_PUBLIC_ADMIN_PATH | `/secretgate` (varsayılan) |
 | NEXT_PUBLIC_GA_ID | İsteğe bağlı; yalnızca çerez onayından sonra yüklenir |
 
    PayTR, Resend ve CRON değişkenleri satış kapalıyken gerekmez.
@@ -44,10 +52,16 @@ müşteri üyeliği kapalı; kodları duruyor ve `lib/features.ts` içindeki iki
 
 ## 4. Adresler
 - Site: `https://formstep.tr`
-- Yönetim girişi: `https://formstep.tr/secretgate/giris` (panel: `/secretgate`). `/admin`, `/giris`, `/sepet`, `/odeme`, `/hesabim` 404 döner.
+- Yönetim girişi: `https://formstep.tr/admin/giris` (panel: `/admin`). Eski `/secretgate` adresleri `/admin`'e yönlenir. `/giris`, `/sepet`, `/odeme`, `/hesabim` 404 döner.
 
 ## 5. Yönetim panelinden
-- **Stok**: numara numara adet.
+- **Özet**: ayın satışı, tahmini kâr, stok, dikkat edilmesi gerekenler, son işlemler.
+- **Stok**: konum bazında (Ana depo, Amazon FBA...) model-numara adetleri; stok girişi, transfer, fire, sayım.
+- **Sevkiyatlar**: Amazon'a ve diğer pazaryerlerine giden koliler; "Yolda" olunca stok depodan düşer, teslim farkı fire olur.
+- **Satışlar**: pazaryeri raporu (.xlsx / .csv) yükleme, elle satış, eşlenmemiş ürün kodlarını eşleme, Excel çıktısı.
+- **Aldı-verdi**: gelir, gider, vadeli ödemeler, ortak hesabı, cari hesaplar, fatura/dekont dosyası.
+- **Kâr ve raporlar**: birim maliyet, aylık kâr-zarar, kanal karşılaştırması.
+- **Reklam**, **Sosyal medya**, **Görevler**, **İşlem geçmişi** (kim neyi değiştirdi), **Hesabım** (şifre değiştirme).
 - **Ürünler**: açıklama, özellik, görsel, fiyat. Onaylı özellik girersen ürün sayfasındaki varsayılan kartların yerini alır.
 - **İçerik**: pazaryeri bağlantıları, Instagram/X, duyuru şeridi, SSS, model seçici, yasal metinler (istersen avukat onaylı metni buraya yapıştır).
 - **Ayarlar**: satıcı ve iletişim bilgileri (yasal metinlerde görünür).

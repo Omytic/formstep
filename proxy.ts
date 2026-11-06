@@ -1,6 +1,6 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
-import { ADMIN } from "@/lib/admin-path";
+import { ADMIN, LEGACY_ADMIN } from "@/lib/admin-path";
 import { ACCOUNT_PATHS, ACCOUNTS_ENABLED, SALES_ENABLED, SALES_PATHS } from "@/lib/features";
 import { LEGAL_NAV } from "@/lib/legal";
 
@@ -8,7 +8,7 @@ import { LEGAL_NAV } from "@/lib/legal";
 const UNKNOWN_PAGE = new RegExp(`^/(urun/(?!(m100|m300|m900)/?$)[^/]+|bilgilendirme/(?!(${LEGAL_NAV.map((l) => l.slug).join("|")})/?$)[^/]+)`);
 
 /**
- * 1) Yönetim paneli yalnızca gizli adresten (ADMIN) açılır; doğrudan /admin 404 döner.
+ * 1) Yönetim paneli /admin'dedir; eski /secretgate adresleri oraya yönlenir.
  * 2) Kapalı bölümler (satış, üyelik) 404 döner; bkz. lib/features.ts.
  * 3) Yönetici girişi ADMIN/giris adresindedir; içeride /yonetim-giris sayfasına gider.
  * 4) Supabase oturum çerezlerini tazeler.
@@ -16,9 +16,13 @@ const UNKNOWN_PAGE = new RegExp(`^/(urun/(?!(m100|m300|m900)/?$)[^/]+|bilgilendi
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
+  if (pathname === LEGACY_ADMIN || pathname.startsWith(LEGACY_ADMIN + "/")) {
+    const url = request.nextUrl.clone();
+    url.pathname = ADMIN + pathname.slice(LEGACY_ADMIN.length);
+    return NextResponse.redirect(url, 308);
+  }
+
   const hidden =
-    pathname === "/admin" ||
-    pathname.startsWith("/admin/") ||
     pathname.startsWith("/yonetim-giris") ||
     (!SALES_ENABLED && SALES_PATHS.test(pathname)) ||
     (!ACCOUNTS_ENABLED && ACCOUNT_PATHS.test(pathname)) ||
@@ -28,11 +32,7 @@ export async function proxy(request: NextRequest) {
   }
   const isAdmin = pathname === ADMIN || pathname.startsWith(ADMIN + "/");
   const isLogin = pathname === ADMIN + "/giris";
-  const target = isLogin
-    ? new URL("/yonetim-giris" + request.nextUrl.search, request.url)
-    : isAdmin
-      ? new URL("/admin" + pathname.slice(ADMIN.length) + request.nextUrl.search, request.url)
-      : null;
+  const target = isLogin ? new URL("/yonetim-giris" + request.nextUrl.search, request.url) : null;
 
   let response = target ? NextResponse.rewrite(target, { request }) : NextResponse.next({ request });
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;

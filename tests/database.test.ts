@@ -117,3 +117,62 @@ describe("satır düzeyi güvenlik (RLS)", () => {
     await db.exec(`reset role;`);
   });
 });
+
+describe("operasyon: stok, sevkiyat, satış", () => {
+  const loc = async (code: string) => (await one<{ id: string }>(`select id from stock_locations where code = $1`, [code])).id;
+  const level = async (variant: string, code: string) =>
+    (await one<{ qty: number }>(`select coalesce(sum(qty), 0)::int qty from stock_levels where variant_id = $1 and location_id = $2`, [variant, await loc(code)])).qty;
+
+  it("girişler depoya ekler, sevkiyat depodan Amazon'a taşır, teslim farkı fire olur", async () => {
+    const depo = await loc("depo");
+    const fba = await loc("amazon-fba");
+    await q(`insert into stock_movements (variant_id, to_location, qty, kind) values ($1, $2, 100, 'giris')`, [m900, depo]);
+    expect(await level(m900, "depo")).toBe(100);
+
+    const { id } = await one<{ id: string }>(
+      `insert into shipments (channel, from_location, to_location, status) values ('amazon', $1, $2, 'hazirlaniyor') returning id`,
+      [depo, fba],
+    );
+    await q(`insert into shipment_items (shipment_id, variant_id, qty_sent) values ($1, $2, 40)`, [id, m900]);
+    await q(`select sync_shipment_movements($1)`, [id]);
+    expect(await level(m900, "depo")).toBe(100); // hazırlanıyor: stok yerinde
+
+    await q(`update shipments set status = 'yolda' where id = $1`, [id]);
+    await q(`select sync_shipment_movements($1)`, [id]);
+    await q(`select sync_shipment_movements($1)`, [id]); // tekrar çağırmak çift saymaz
+    expect(await level(m900, "depo")).toBe(60);
+    expect(await level(m900, "amazon-fba")).toBe(40);
+
+    await q(`update shipments set status = 'eksik' where id = $1`, [id]);
+    await q(`update shipment_items set qty_received = 37 where shipment_id = $1`, [id]);
+    await q(`select sync_shipment_movements($1)`, [id]);
+    expect(await level(m900, "amazon-fba")).toBe(37);
+
+    await q(`update shipments set status = 'iptal' where id = $1`, [id]);
+    await q(`select sync_shipment_movements($1)`, [id]);
+    expect(await level(m900, "depo")).toBe(100);
+    expect(await level(m900, "amazon-fba")).toBe(0);
+    await q(`update shipments set status = 'teslim' where id = $1`, [id]);
+    await q(`update shipment_items set qty_received = 40 where shipment_id = $1`, [id]);
+    await q(`select sync_shipment_movements($1)`, [id]);
+  });
+
+  it("satış kanalın stok konumundan düşer, iade geri ekler, aynı satır iki kez yüklenmez", async () => {
+    await q(`insert into sales (channel, order_no, line_key, sold_on, variant_id, qty, gross_kurus, commission_kurus) values ('amazon', '111-1', 'X', '2026-11-01', $1, 3, 60000, 9000)`, [m900]);
+    await expect(q(`insert into sales (channel, order_no, line_key, sold_on, variant_id, qty) values ('amazon', '111-1', 'X', '2026-11-01', $1, 3)`, [m900])).rejects.toThrow(/duplicate/);
+    await q(`insert into sales (channel, order_no, line_key, sold_on, variant_id, qty) values ('trendyol', 'T-9', 'Y', '2026-11-02', $1, 2)`, [m900]);
+    await q(`insert into sales (channel, order_no, line_key, type, sold_on, variant_id, qty) values ('amazon', '111-1', 'X', 'iade', '2026-11-05', $1, 1)`, [m900]);
+    expect(await level(m900, "amazon-fba")).toBe(40 - 3 + 1);
+    expect(await level(m900, "depo")).toBe(60 - 2);
+    expect((await one<{ n: number }>(`select net_kurus n from sales where order_no = '111-1' and type = 'satis'`)).n).toBe(51000);
+  });
+
+  it("operasyon tabloları ziyaretçiye kapalı", async () => {
+    await db.exec(`grant select on all tables in schema public to anon, authenticated; set role anon;`);
+    for (const t of ["sales", "ledger_entries", "stock_movements", "shipments", "team_tasks", "ad_spend"]) {
+      expect((await one<{ n: number }>(`select count(*)::int n from ${t}`)).n, t).toBe(0);
+    }
+    expect((await one<{ n: number }>(`select count(*)::int n from stock_levels`)).n).toBe(0);
+    await db.exec(`reset role;`);
+  });
+});

@@ -1,14 +1,11 @@
 /**
- * Yönetim panelinin tarayıcıda görünen gizli adresi. Dosyalar app/admin altında durur;
- * proxy.ts bu adresi içeride /admin'e yönlendirir ve doğrudan /admin isteklerine 404 döner.
- * Değiştirmek için Vercel'de NEXT_PUBLIC_ADMIN_PATH ortam değişkenini ayarla (örn. /kapi-8k2f).
+ * Yönetim panelinin adresi. Dosyalar app/admin altında; panel doğrudan /admin'den açılır.
+ * Eski /secretgate adresi proxy.ts'de /admin'e yönlenir.
+ * Güvenlik adresin gizliliğinden değil, şifreden ve giriş deneme sınırından gelir.
  */
-function normalize(p: string): string {
-  const clean = "/" + p.trim().replace(/^\/+|\/+$/g, "");
-  return /^\/[a-z0-9-]{4,40}$/i.test(clean) && clean.toLowerCase() !== "/admin" ? clean : "/secretgate";
-}
-
-export const ADMIN = normalize(process.env.NEXT_PUBLIC_ADMIN_PATH || "/secretgate");
+export const ADMIN = "/admin";
+/** Eski panel adresi; yer imleri bozulmasın diye yönlendirilir. */
+export const LEGACY_ADMIN = "/secretgate";
 
 export function adm(path = ""): string {
   return ADMIN + path;

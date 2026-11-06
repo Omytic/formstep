@@ -3,6 +3,8 @@ import { securityHeaders } from "./lib/security/headers";
 
 const nextConfig: NextConfig = {
   poweredByHeader: false,
+  // Muhasebe dosyaları (fatura, dekont) için: varsayılan 1 MB yetmez. Vercel istek sınırı 4,5 MB.
+  experimental: { serverActions: { bodySizeLimit: "4mb" } },
   turbopack: {
     rules: {
       "*.css": {

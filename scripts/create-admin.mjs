@@ -30,4 +30,4 @@ if (error) {
 }
 const { error: e2 } = await sb.from("admins").upsert({ user_id: userId, role });
 if (e2) throw e2;
-console.log(`✓ ${email} artık ${role === "owner" ? "sahip" : "personel"} yetkisiyle yönetici. yönetim paneline (varsayılan /secretgate) giriş yapabilir.`);
+console.log(`✓ ${email} artık ${role === "owner" ? "sahip" : "personel"} yetkisiyle yönetici. yönetim paneline (/admin) giriş yapabilir.`);
