@@ -338,3 +338,14 @@ export function netAmount(s: Pick<Sale, "type" | "net_kurus">): number {
 export function grossAmount(s: Pick<Sale, "type" | "gross_kurus">): number {
   return s.type === "iade" ? -s.gross_kurus : s.gross_kurus;
 }
+
+/**
+ * Operasyon tabloları veritabanında var mı? Migration (npx supabase db push) yapılmadıysa
+ * panel çökmek yerine ne yapılacağını söyler.
+ */
+export async function opsSchemaReady(): Promise<{ ok: true } | { ok: false; reason: string }> {
+  if (!live()) return { ok: true };
+  const { error } = await db().from("stock_levels").select("qty", { head: true, count: "exact" }).limit(1);
+  if (!error) return { ok: true };
+  return { ok: false, reason: error.message };
+}

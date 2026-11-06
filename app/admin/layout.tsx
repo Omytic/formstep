@@ -6,6 +6,7 @@ import { ExternalLink, LogOut } from "lucide-react";
 import { signOut } from "@/app/actions/auth";
 import { AdminNav } from "@/components/admin/AdminNav";
 import { requireAdmin } from "@/lib/auth";
+import { opsSchemaReady } from "@/lib/ops/data";
 
 export const dynamic = "force-dynamic";
 
@@ -13,6 +14,7 @@ export const metadata: Metadata = { title: { default: "Yönetim", template: "%s 
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const admin = await requireAdmin();
+  const schema = await opsSchemaReady();
   return (
     <div className="min-h-screen bg-paper lg:grid lg:grid-cols-[260px_1fr]">
       <aside className="bg-night px-4 py-5 text-paper lg:sticky lg:top-0 lg:flex lg:h-screen lg:flex-col lg:overflow-y-auto">
@@ -33,7 +35,18 @@ export default async function AdminLayout({ children }: { children: React.ReactN
             <strong>Önizleme modu.</strong> Veritabanı bağlı değil; gördüğün rakamlar örnek, formlar kayıt yapmaz.
           </p>
         ) : null}
-        {children}
+        {schema.ok ? (
+          children
+        ) : (
+          <div className="card max-w-2xl p-8">
+            <h1 className="display text-3xl">Veritabanı güncellenmeli</h1>
+            <p className="mt-3 leading-7 text-ink/65">
+              Panelin yeni bölümleri (stok, sevkiyat, satış, aldı-verdi...) için veritabanına yeni tablolar eklenmesi gerekiyor. Cursor terminalinde proje klasöründe şunu çalıştır, sonra bu sayfayı yenile:
+            </p>
+            <pre className="mt-4 overflow-x-auto rounded-2xl bg-night px-5 py-4 text-sm text-paper">npx supabase db push</pre>
+            <p className="mt-4 text-xs text-ink/45">Teknik ayrıntı: {schema.reason}</p>
+          </div>
+        )}
       </main>
     </div>
   );
